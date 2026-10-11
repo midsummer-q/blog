@@ -1,0 +1,53 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/Header.astro";
+import Breadcrumb from "@/components/Breadcrumb.astro";
+import Main from "@/components/Main.astro";
+import Footer from "@/components/Footer.astro";
+import FluidTextCanvas from "@/components/FluidTextCanvas.astro";
+import config from "@/config";
+
+const pageTitle = "极客实验室：Pretext 流体文字避障演示";
+const pageDesc = "基于 @chenglou/pretext 文本排版引擎构建的 Canvas 60FPS 实时避障流动文字体验。";
+---
+
+<Layout
+  title={`${pageTitle} | ${config.site.title}`}
+  description={pageDesc}
+>
+  <Header />
+  <Breadcrumb />
+
+  <Main pageTitle={pageTitle} pageDesc={pageDesc}>
+    <div class="prose dark:prose-invert max-w-none text-foreground/80 leading-relaxed">
+      <p>
+        传统的网页文本排版深度绑定在 DOM 树中。如果尝试在动画的每一帧中改变文本换行并测量高度，会触发灾难级的
+        <strong>浏览器强制重排（Layout Reflow）</strong>，造成严重的卡顿与掉帧。
+      </p>
+      <p>
+        下面的交互实验基于 <strong>@chenglou/pretext</strong> 实现。它将文字排版彻底解耦为<strong>纯数学算术推导</strong>，在
+        Canvas 画布中实现<strong>在每一帧（16.6ms）内以微秒级延迟动态排布文本</strong>，让文字像流水般实时绕过障碍物：
+      </p>
+    </div>
+
+    <!-- 交互式流体避障组件 -->
+    <FluidTextCanvas />
+
+    <div class="prose dark:prose-invert max-w-none mt-8 text-foreground/80 leading-relaxed border-t border-border pt-6">
+      <h3 class="text-xl font-semibold text-foreground mb-3">为什么能这么快？</h3>
+      <ul class="list-disc pl-5 space-y-2">
+        <li>
+          <strong>分离测量与计算（<code>prepareWithSegments</code>）</strong>：仅在初始化时做一次轻量字宽提取并建立索引，耗时约 2ms。
+        </li>
+        <li>
+          <strong>每行自适应宽度推导（<code>layoutNextLineRange</code>）</strong>：在每帧绘制时，根据当前行 Y 坐标与障碍物的几何相交实时计算可用宽度，通过纯算术求解文字折断点，<strong>单行计算仅耗时 0.0002 毫秒</strong>。
+        </li>
+        <li>
+          <strong>零 DOM 回流损耗</strong>：完全脱离 DOM，无论怎样快速移动障碍物，主线程永远保持绿色的满帧运行。
+        </li>
+      </ul>
+    </div>
+  </Main>
+
+  <Footer />
+</Layout>

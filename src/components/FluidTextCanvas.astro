@@ -1,0 +1,289 @@
+---
+// FluidTextCanvas.astro - 基于 @chenglou/pretext 实现的 60FPS 实时流体文字避障画布
+---
+
+<div class="fluid-text-container border-border bg-card relative my-8 overflow-hidden rounded-2xl border p-4 shadow-lg sm:p-6">
+  <!-- 仪表盘控制栏 -->
+  <div class="border-border/60 mb-4 flex flex-wrap items-center justify-between gap-3 border-b pb-4 text-xs">
+    <div class="flex flex-wrap items-center gap-2">
+      <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-2.5 py-1 font-mono text-emerald-500">
+        <span class="size-2 animate-pulse rounded-full bg-emerald-500"></span>
+        <span id="fps-counter">60 FPS</span>
+      </span>
+      <span class="text-muted-foreground font-mono">
+        排版延迟: <strong id="latency-counter" class="text-accent font-semibold">0.00 ms</strong>
+      </span>
+      <span class="text-muted-foreground hidden font-mono sm:inline">
+        行数: <strong id="lines-counter" class="text-foreground">0</strong>
+      </span>
+    </div>
+
+    <!-- 交互模式切换 -->
+    <div class="flex items-center gap-2">
+      <button
+        id="toggle-mode-btn"
+        class="border-border bg-background hover:text-accent focus-outline cursor-pointer rounded-lg border px-3 py-1 font-medium transition"
+      >
+        模式: 鼠标互动
+      </button>
+      <button
+        id="toggle-text-btn"
+        class="border-border bg-background hover:text-accent focus-outline cursor-pointer rounded-lg border px-3 py-1 font-medium transition"
+      >
+        换一段文本
+      </button>
+    </div>
+  </div>
+
+  <!-- 画布主体 -->
+  <div class="relative w-full overflow-hidden rounded-xl bg-neutral-900/40">
+    <canvas id="fluid-canvas" class="block w-full touch-none cursor-crosshair"></canvas>
+    
+    <!-- 提示小标签 -->
+    <div class="pointer-events-none absolute right-3 bottom-3 select-none rounded bg-black/50 px-2 py-1 font-mono text-[11px] text-neutral-400 backdrop-blur">
+      移动鼠标或触摸拖动球体
+    </div>
+  </div>
+</div>
+
+<script>
+  import {
+    prepareWithSegments,
+    layoutNextLineRange,
+    materializeLineRange,
+    type LayoutCursor,
+  } from "@chenglou/pretext";
+
+  const SAMPLE_TEXTS = [
+    `在传统网页排版体系中，获取文本几何尺寸必然会触发布局重排（Layout Reflow），导致主线程卡顿掉帧。Pretext 由前 React 团队成员 Cheng Lou 开源，通过创新的离线分词与纯数学算术推导，彻底颠覆了 DOM 依赖。它将文本排版提速数百倍，使得在 60 帧每秒的动画循环中动态排布文字、实现如流水般绕开动态障碍物成为可能。这就是纯函数式与数学之美在现代浏览器中的极致展现。`,
+    `昔者庄周梦为胡蝶，栩栩然胡蝶也，自喻适志与！不知周也。俄然觉，则蘧蘧然周也。不知周之梦为胡蝶与，胡蝶之梦为周与？周与胡蝶，则必有分矣。此之谓物化。文本如同流水，随器赋形，随物绕流。在代码的世界里，数学将原本沉重的排版赋予了如轻蝶展翅般的自由与灵动。`,
+    `Modern web performance often suffers from forced synchronous reflows whenever developers try to measure text in the DOM. Pretext solves this by separating one-time font analysis from ultra-fast arithmetic layout. With sub-microsecond line wrapping, text can fluidly route around interactive obstacles at silky-smooth frame rates without a single dropped frame.`,
+  ];
+
+  function initFluidCanvas() {
+    const canvas = document.getElementById("fluid-canvas") as HTMLCanvasElement | null;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const cvs: HTMLCanvasElement = canvas;
+    const renderCtx: CanvasRenderingContext2D = ctx;
+
+    const latencyEl = document.getElementById("latency-counter");
+    const fpsEl = document.getElementById("fps-counter");
+    const linesEl = document.getElementById("lines-counter");
+    const toggleModeBtn = document.getElementById("toggle-mode-btn");
+    const toggleTextBtn = document.getElementById("toggle-text-btn");
+
+    let textIndex = 0;
+    let autoMode = false;
+    let preparedHandle: ReturnType<typeof prepareWithSegments> | null = null;
+    let currentFont = '15px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+    const lineHeight = 28;
+    const padding = 20;
+
+    // 障碍物状态
+    let ballX = 200;
+    let ballY = 150;
+    let ballRadius = 55;
+    let targetX = 200;
+    let targetY = 150;
+    let vx = 2.2;
+    let vy = 1.6;
+
+    // 性能监控
+    let frameCount = 0;
+    let lastFpsTime = performance.now();
+
+    function updatePreparedText() {
+      preparedHandle = prepareWithSegments(SAMPLE_TEXTS[textIndex], currentFont);
+    }
+
+    function resizeCanvas() {
+      const rect = cvs.parentElement?.getBoundingClientRect();
+      const width = rect?.width || 600;
+      const height = Math.min(Math.max(width * 0.65, 360), 480);
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+      cvs.width = width * dpr;
+      cvs.height = height * dpr;
+      cvs.style.width = `${width}px`;
+      cvs.style.height = `${height}px`;
+
+      renderCtx.scale(dpr, dpr);
+      updatePreparedText();
+
+      if (ballX > width - ballRadius) ballX = width / 2;
+      if (ballY > height - ballRadius) ballY = height / 2;
+    }
+
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+
+    // 鼠标与触摸事件绑定
+    function onPointerMove(e: MouseEvent | TouchEvent) {
+      if (autoMode) return;
+      const rect = cvs.getBoundingClientRect();
+      let clientX = 0;
+      let clientY = 0;
+      if ("touches" in e) {
+        if (e.touches.length > 0) {
+          clientX = e.touches[0].clientX;
+          clientY = e.touches[0].clientY;
+        }
+      } else {
+        clientX = e.clientX;
+        clientY = e.clientY;
+      }
+      targetX = clientX - rect.left;
+      targetY = clientY - rect.top;
+    }
+
+    cvs.addEventListener("mousemove", onPointerMove);
+    cvs.addEventListener("touchmove", onPointerMove, { passive: true });
+
+    if (toggleModeBtn) {
+      toggleModeBtn.addEventListener("click", () => {
+        autoMode = !autoMode;
+        toggleModeBtn.textContent = autoMode ? "模式: 自动漫游" : "模式: 鼠标互动";
+      });
+    }
+
+    if (toggleTextBtn) {
+      toggleTextBtn.addEventListener("click", () => {
+        textIndex = (textIndex + 1) % SAMPLE_TEXTS.length;
+        updatePreparedText();
+      });
+    }
+
+    // 核心渲染循环
+    function render(now: number) {
+      frameCount++;
+      if (now - lastFpsTime >= 500) {
+        const fps = Math.round((frameCount * 1000) / (now - lastFpsTime));
+        if (fpsEl) fpsEl.textContent = `${fps} FPS`;
+        frameCount = 0;
+        lastFpsTime = now;
+      }
+
+      const rect = cvs.getBoundingClientRect();
+      const width = rect.width;
+      const height = rect.height;
+
+      // 更新障碍物位置
+      if (autoMode) {
+        ballX += vx;
+        ballY += vy;
+        if (ballX - ballRadius < padding || ballX + ballRadius > width - padding) vx = -vx;
+        if (ballY - ballRadius < padding || ballY + ballRadius > height - padding) vy = -vy;
+      } else {
+        // 平滑缓动跟随
+        ballX += (targetX - ballX) * 0.15;
+        ballY += (targetY - ballY) * 0.15;
+      }
+
+      renderCtx.clearRect(0, 0, width, height);
+
+      // 绘制发光障碍物球体
+      const grad = renderCtx.createRadialGradient(
+        ballX - ballRadius * 0.25,
+        ballY - ballRadius * 0.25,
+        ballRadius * 0.1,
+        ballX,
+        ballY,
+        ballRadius
+      );
+      grad.addColorStop(0, "rgba(236, 72, 153, 0.95)");
+      grad.addColorStop(0.6, "rgba(139, 92, 246, 0.75)");
+      grad.addColorStop(1, "rgba(99, 102, 241, 0.15)");
+
+      renderCtx.save();
+      renderCtx.beginPath();
+      renderCtx.arc(ballX, ballY, ballRadius, 0, Math.PI * 2);
+      renderCtx.fillStyle = grad;
+      renderCtx.shadowColor = "rgba(168, 85, 247, 0.5)";
+      renderCtx.shadowBlur = 24;
+      renderCtx.fill();
+
+      // 内发光轮廓
+      renderCtx.strokeStyle = "rgba(255, 255, 255, 0.4)";
+      renderCtx.lineWidth = 1.5;
+      renderCtx.stroke();
+      renderCtx.restore();
+
+      // 开始 Pretext 排版性能统计
+      const t0 = performance.now();
+      let linesCount = 0;
+
+      if (preparedHandle) {
+        renderCtx.font = currentFont;
+        renderCtx.fillStyle = document.documentElement.classList.contains("dark")
+          ? "#e4e4e7"
+          : "#27272a";
+        renderCtx.textBaseline = "top";
+
+        let cursor: LayoutCursor = { segmentIndex: 0, graphemeIndex: 0 };
+        let y = padding;
+        const availableW = width - padding * 2;
+
+        while (y < height - lineHeight) {
+          // 判断当前行 y 与障碍物圆形的碰撞区间
+          const midY = y + lineHeight / 2;
+          const dy = Math.abs(midY - ballY);
+
+          let lineStartX = padding;
+          let lineWidth = availableW;
+
+          if (dy < ballRadius + 8) {
+            // 与障碍物横向重叠，计算切断区间
+            const dx = Math.sqrt(Math.max(0, Math.pow(ballRadius + 12, 2) - dy * dy));
+            const obsLeft = ballX - dx;
+            const obsRight = ballX + dx;
+
+            // 避让逻辑：选择更宽的一侧流淌文本
+            const leftRoom = Math.max(0, obsLeft - padding);
+            const rightRoom = Math.max(0, width - padding - obsRight);
+
+            if (leftRoom > rightRoom && leftRoom > 100) {
+              lineStartX = padding;
+              lineWidth = leftRoom;
+            } else if (rightRoom > 100) {
+              lineStartX = Math.max(padding, obsRight);
+              lineWidth = rightRoom;
+            }
+          }
+
+          // 核心：调用 Pretext 纳秒级排版下一行
+          const range = layoutNextLineRange(preparedHandle, cursor, lineWidth);
+          if (!range) break;
+
+          const line = materializeLineRange(preparedHandle, range);
+          renderCtx.fillText(line.text, lineStartX, y);
+
+          cursor = range.end;
+          y += lineHeight;
+          linesCount++;
+        }
+      }
+
+      const t1 = performance.now();
+      const layoutDuration = t1 - t0;
+
+      if (latencyEl) latencyEl.textContent = `${layoutDuration.toFixed(2)} ms`;
+      if (linesEl) linesEl.textContent = `${linesCount}`;
+
+      requestAnimationFrame(render);
+    }
+
+    requestAnimationFrame(render);
+  }
+
+  // 页面生命周期挂载
+  document.addEventListener("astro:page-load", initFluidCanvas);
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initFluidCanvas);
+  } else {
+    initFluidCanvas();
+  }
+</script>
