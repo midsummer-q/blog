@@ -1,179 +1,163 @@
 ---
-// ArticleFluidOrb.astro - 贯穿全篇正文的 DOM 物理流体避障发光球体
+// ArticleFluidOrb.astro - 全篇非侵入式流体光晕交互引擎（零排版重排、零内容挤压）
 ---
 
-<div id="fluid-orb-wrapper" class="fluid-orb-wrapper" aria-hidden="true" title="拖动或移动鼠标体验全篇文字流体避让">
-  <div class="fluid-orb-core">
-    <div class="fluid-orb-pulse"></div>
-  </div>
+<div id="fluid-spotlight-orb" class="fluid-spotlight-orb" aria-hidden="true">
+  <div class="spotlight-core"></div>
+  <div class="spotlight-aura"></div>
 </div>
 
 <style>
-  .fluid-orb-wrapper {
-    float: left;
-    width: 100px;
-    height: 100px;
-    shape-outside: circle(50%);
-    clip-path: circle(50%);
-    border-radius: 50%;
-    margin-right: 1.25rem;
-    margin-bottom: 0.5rem;
-    margin-top: 0px;
-    cursor: grab;
-    user-select: none;
-    position: relative;
-    z-index: 10;
-    transition: margin-top 0.3s cubic-bezier(0.16, 1, 0.3, 1),
-                margin-left 0.25s ease-out,
-                margin-right 0.25s ease-out,
-                opacity 0.2s ease;
-  }
-
-  .fluid-orb-wrapper:active {
-    cursor: grabbing;
-    transform: scale(0.96);
-  }
-
-  .fluid-orb-wrapper.float-right {
-    float: right;
-    margin-right: 0;
-    margin-left: 1.25rem;
-  }
-
-  .fluid-orb-core {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    background: radial-gradient(circle at 35% 35%, rgba(0, 108, 172, 0.95), rgba(99, 102, 241, 0.8) 60%, rgba(139, 92, 246, 0.3) 100%);
-    box-shadow: 0 0 32px rgba(0, 108, 172, 0.45), inset 0 0 15px rgba(255, 255, 255, 0.45);
-    backdrop-filter: blur(10px);
-  }
-
-  :global(.dark) .fluid-orb-core,
-  :global([data-theme="dark"]) .fluid-orb-core {
-    background: radial-gradient(circle at 35% 35%, rgba(255, 107, 1, 0.95), rgba(168, 85, 247, 0.8) 60%, rgba(33, 39, 55, 0.4) 100%);
-    box-shadow: 0 0 35px rgba(255, 107, 1, 0.5), inset 0 0 16px rgba(255, 255, 255, 0.35);
-  }
-
-  .fluid-orb-pulse {
+  .fluid-spotlight-orb {
     position: absolute;
-    inset: -4px;
+    top: 0;
+    left: 0;
+    width: 200px;
+    height: 200px;
+    pointer-events: none;
+    user-select: none;
+    z-index: 0;
+    opacity: 0;
+    will-change: transform, opacity;
+    transition: opacity 0.5s ease-out;
+  }
+
+  .spotlight-core {
+    position: absolute;
+    inset: 15%;
     border-radius: 50%;
-    border: 1.5px solid rgba(255, 255, 255, 0.4);
-    animation: orb-pulse-anim 3s ease-in-out infinite alternate;
+    background: radial-gradient(circle, rgba(0, 108, 172, 0.45) 0%, rgba(99, 102, 241, 0.25) 55%, transparent 75%);
+    filter: blur(28px);
+    mix-blend-mode: multiply;
   }
 
-  @keyframes orb-pulse-anim {
-    0% { transform: scale(0.96); opacity: 0.5; }
-    100% { transform: scale(1.04); opacity: 0.9; }
+  :global(.dark) .spotlight-core,
+  :global([data-theme="dark"]) .spotlight-core {
+    background: radial-gradient(circle, rgba(255, 107, 1, 0.5) 0%, rgba(168, 85, 247, 0.3) 55%, transparent 75%);
+    mix-blend-mode: screen;
   }
 
-  @media (max-width: 640px) {
-    .fluid-orb-wrapper {
-      width: 95px;
-      height: 95px;
-      margin-right: 1rem;
-    }
-    .fluid-orb-wrapper.float-right {
-      margin-left: 1rem;
-    }
+  .spotlight-aura {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(139, 92, 246, 0.2) 0%, transparent 65%);
+    filter: blur(40px);
+    animation: aura-breathe 4s ease-in-out infinite alternate;
   }
 
-  /* 彻底保护表格、代码块与大标题，严禁被浮动光球挤压挤扁 */
-  :global(#article table),
-  :global(#article pre),
-  :global(#article .astro-code),
-  :global(#article blockquote),
-  :global(#article h2),
-  :global(#article h3) {
-    clear: both !important;
+  :global(.dark) .spotlight-aura,
+  :global([data-theme="dark"]) .spotlight-aura {
+    background: radial-gradient(circle, rgba(236, 72, 153, 0.2) 0%, transparent 65%);
+  }
+
+  @keyframes aura-breathe {
+    0% { transform: scale(0.92); opacity: 0.7; }
+    100% { transform: scale(1.12); opacity: 1; }
+  }
+
+  /* 保证文章内所有文本、表格和代码块位于光晕上层且层次分明 */
+  :global(#article > *) {
+    position: relative;
+    z-index: 1;
   }
 </style>
 
 <script>
-  function initArticleFluidOrb() {
-    const orb = document.getElementById("fluid-orb-wrapper");
+  function initFluidSpotlight() {
+    const orb = document.getElementById("fluid-spotlight-orb");
     const article = document.getElementById("article");
     if (!orb || !article) return;
 
     const orbEl: HTMLElement = orb;
     const articleEl: HTMLElement = article;
 
-    let isDragging = false;
-    let targetY = 0;
-    let isFloatingRight = false;
+    let targetX = 150;
+    let targetY = 100;
+    let curX = 150;
+    let curY = 100;
+    let isHovering = false;
+    let isIdle = true;
 
-    // 当鼠标在文章正文中移动时，发光球体灵敏跟随并触发段落避障绕排
-    function onArticleMove(e: MouseEvent | TouchEvent) {
-      // 如果光标悬停在表格、代码块、引用块或大标题上，光球自动降低透明度并静止，保障阅读舒适度
-      const target = e.target as HTMLElement | null;
-      if (target && target.closest("table, pre, .astro-code, h2, h3, blockquote")) {
-        orbEl.style.opacity = "0.15";
-        return;
-      } else {
-        orbEl.style.opacity = "1";
-      }
+    // 自主轻柔漫游速度
+    let floatAngle = 0;
+
+    function onPointerMove(e: MouseEvent | TouchEvent) {
+      isHovering = true;
+      isIdle = false;
+      orbEl.style.opacity = "1";
 
       const rect = articleEl.getBoundingClientRect();
-      let clientX = 0;
-      let clientY = 0;
+      let cx = 0;
+      let cy = 0;
 
       if ("touches" in e) {
         if (e.touches.length > 0) {
-          clientX = e.touches[0].clientX;
-          clientY = e.touches[0].clientY;
+          cx = e.touches[0].clientX;
+          cy = e.touches[0].clientY;
         }
       } else {
-        clientX = e.clientX;
-        clientY = e.clientY;
+        cx = e.clientX;
+        cy = e.clientY;
       }
 
-      // 计算鼠标相对文章顶部的 Y 轴偏移
-      const relY = clientY - rect.top;
-      const maxY = Math.max(0, articleEl.clientHeight - orbEl.clientHeight - 40);
-      targetY = Math.max(0, Math.min(relY - orbEl.clientHeight / 2, maxY));
-
-      // 根据鼠标偏左还是偏右，动态切换左右浮动避让
-      const relX = clientX - rect.left;
-      if (relX > rect.width * 0.58 && !isFloatingRight) {
-        isFloatingRight = true;
-        orbEl.classList.add("float-right");
-      } else if (relX < rect.width * 0.42 && isFloatingRight) {
-        isFloatingRight = false;
-        orbEl.classList.remove("float-right");
-      }
-
-      orbEl.style.marginTop = `${Math.round(targetY)}px`;
+      targetX = cx - rect.left;
+      targetY = cy - rect.top;
     }
 
-    // 触摸拖动支持
-    orbEl.addEventListener("touchstart", () => { isDragging = true; }, { passive: true });
-    window.addEventListener("touchend", () => { isDragging = false; }, { passive: true });
+    function onPointerLeave() {
+      isHovering = false;
+      // 鼠标移出后温柔淡化但继续保持轻柔呼吸
+      orbEl.style.opacity = "0.6";
+    }
 
-    articleEl.addEventListener("mousemove", onArticleMove);
-    articleEl.addEventListener("touchmove", onArticleMove, { passive: true });
+    articleEl.addEventListener("mousemove", onPointerMove);
+    articleEl.addEventListener("touchmove", onPointerMove, { passive: true });
+    articleEl.addEventListener("mouseenter", () => {
+      orbEl.style.opacity = "1";
+    });
+    articleEl.addEventListener("mouseleave", onPointerLeave);
 
-    // 读者滚动阅读时，球体温柔贴合视口自然滑行
+    // 读者滚动页面时，光晕平滑伴随阅读视口
     window.addEventListener("scroll", () => {
-      if (isDragging) return;
-      const rect = articleEl.getBoundingClientRect();
-      if (rect.top < 150 && rect.bottom > 200) {
-        const viewY = Math.max(0, 160 - rect.top);
-        const maxY = Math.max(0, articleEl.clientHeight - orbEl.clientHeight - 40);
-        targetY = Math.min(viewY, maxY);
-        orbEl.style.marginTop = `${Math.round(targetY)}px`;
+      if (!isHovering) {
+        const rect = articleEl.getBoundingClientRect();
+        if (rect.top < window.innerHeight && rect.bottom > 0) {
+          const viewY = Math.max(60, window.innerHeight * 0.35 - rect.top);
+          targetY = Math.min(viewY, articleEl.clientHeight - 100);
+        }
       }
     }, { passive: true });
+
+    // 60FPS GPU 硬件加速渲染循环（只变换 translate3d，绝不引发任何回流重排）
+    function render() {
+      if (!document.body.contains(orbEl)) return;
+
+      if (isIdle && !isHovering) {
+        floatAngle += 0.025;
+        targetX = articleEl.clientWidth / 2 + Math.cos(floatAngle) * 80;
+      }
+
+      // 平滑缓动插值（弹性流体质感）
+      curX += (targetX - curX) * 0.12;
+      curY += (targetY - curY) * 0.12;
+
+      // translate3d(x, y, 0) 让 GPU 单独合成层处理，零 DOM 几何重绘
+      const x = Math.round(curX - 100);
+      const y = Math.round(curY - 100);
+      orbEl.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+
+      requestAnimationFrame(render);
+    }
+
+    orbEl.style.opacity = "0.75";
+    requestAnimationFrame(render);
   }
 
-  document.addEventListener("astro:page-load", initArticleFluidOrb);
+  document.addEventListener("astro:page-load", initFluidSpotlight);
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initArticleFluidOrb);
+    document.addEventListener("DOMContentLoaded", initFluidSpotlight);
   } else {
-    initArticleFluidOrb();
+    initFluidSpotlight();
   }
 </script>
