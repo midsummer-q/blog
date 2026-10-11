@@ -1,125 +1,90 @@
 ---
-import { getCollection } from "astro:content";
 import { getRelativeLocaleUrl } from "astro:i18n";
-import IconRss from "@/assets/icons/IconRss.svg";
 import IconArrowRight from "@/assets/icons/IconArrowRight.svg";
 import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
 import Socials from "@/components/Socials.astro";
-import Card from "@/components/Card.astro";
 import LinkButton from "@/components/LinkButton.astro";
-import { getSortedPosts } from "@/utils/getSortedPosts";
-import { useTranslations } from "@/i18n";
 import config from "@/config";
 
-const { socials, posts: postsConfig } = config;
-
+const { socials } = config;
 const locale = Astro.currentLocale ?? config.site.lang;
-const t = useTranslations(locale);
 
-const posts = await getCollection("posts");
-const sortedPosts = getSortedPosts(posts);
-const featuredPosts = sortedPosts.filter(({ data }) => data.featured);
-const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
-const homePath = getRelativeLocaleUrl(locale, "");
+// 首页呈现的诗词（呼应你的名字 midsummer-q · 盛夏时光）
+// 你可以随时在此修改为你喜爱的任意诗歌
+const poem = {
+  title: "夏意",
+  author: "苏舜钦",
+  dynasty: "宋",
+  lines: [
+    "别院深深夏席清，",
+    "石榴开遍透帘明。",
+    "树阴满地日当午，",
+    "梦觉流莺时一声。"
+  ],
+  quote: "万物繁茂，静听风吟。"
+};
 ---
 
 <Layout>
   <Header />
+
   <main
     id="main-content"
-    data-layout="index"
-    data-home-path={homePath}
-    class="app-layout my-1"
+    class="app-layout flex min-h-[calc(100vh-180px)] flex-col items-center justify-center py-12"
   >
-    <section id="hero" class="border-border border-b pt-8 pb-6">
-      <h1 class="my-4 inline-block text-4xl font-bold sm:my-8 sm:text-5xl">
-        你好，我是 midsummer-q 👋
-      </h1>
-      <a
-        target="_blank"
-        href={`${import.meta.env.BASE_URL.replace(/\/?$/, "/")}rss.xml`}
-        class="inline-block"
-        aria-label="RSS Feed"
-        title="RSS Feed"
-      >
-        <IconRss
-          width={20}
-          height={20}
-          class="stroke-accent scale-125 stroke-3 rtl:-rotate-90"
-        />
-        <span class="sr-only">RSS Feed</span>
-      </a>
+    <div class="w-full max-w-xl text-center">
+      <!-- 诗歌展示核心卡片区 -->
+      <section class="relative py-8 sm:py-14">
+        <!-- 诗词徽标 -->
+        <div class="mb-6 inline-flex items-center gap-2 rounded-full border border-border/80 bg-muted/40 px-3.5 py-1 text-xs text-muted-foreground font-mono">
+          <span class="size-1.5 rounded-full bg-accent animate-pulse"></span>
+          <span>Midsummer · 诗意栖居</span>
+        </div>
 
-      <p class="text-foreground/80 mt-2 leading-relaxed">
-        欢迎来到我的个人博客与数字花园。这里主要记录日常的技术探索、计算机底层思考、架构设计心得与学习笔记。
-      </p>
-      {
-        socials.length > 0 && (
-          <div class="mt-4 flex max-sm:flex-col sm:items-center">
-            <div class="me-2 mb-1 whitespace-nowrap sm:mb-0">
-              {t.home.socialLinks}:
-            </div>
-            <Socials />
-          </div>
-        )
-      }
-    </section>
+        <!-- 诗词标题与作者 -->
+        <h1 class="text-2xl font-bold tracking-widest text-foreground sm:text-3xl font-serif">
+          {poem.title}
+        </h1>
+        <p class="mt-2 text-sm text-muted-foreground font-serif tracking-widest">
+          〔{poem.dynasty}〕{poem.author}
+        </p>
 
-    {
-      featuredPosts.length > 0 && (
-        <section
-          id="featured"
-          class:list={[
-            "pt-12 pb-6",
-            { "border-border border-b": recentPosts.length > 0 },
-          ]}
-        >
-          <h2 class="text-2xl font-semibold tracking-wide">
-            {t.home.featured}
-          </h2>
-          <ul>
-            {featuredPosts.map(data => (
-              <Card variant="h3" {...data} />
-            ))}
-          </ul>
-        </section>
-      )
-    }
+        <!-- 诗词正文行 -->
+        <div class="my-8 space-y-3.5 font-serif text-lg leading-relaxed text-foreground/90 sm:text-xl tracking-widest">
+          {poem.lines.map(line => (
+            <p class="transition-colors hover:text-accent cursor-default">{line}</p>
+          ))}
+        </div>
 
-    {
-      recentPosts.length > 0 && (
-        <section id="recent-posts" class="pt-12 pb-6">
-          <h2 class="text-2xl font-semibold tracking-wide">
-            {t.home.recentPosts}
-          </h2>
-          <ul>
-            {recentPosts.slice(0, postsConfig.perIndex).map(data => (
-              <Card variant="h3" {...data} />
-            ))}
-          </ul>
-        </section>
-      )
-    }
+        <!-- 心境附言 -->
+        {poem.quote && (
+          <p class="mt-8 text-xs text-muted-foreground/75 italic font-mono tracking-wider">
+            —— {poem.quote}
+          </p>
+        )}
 
-    <div class="my-8 text-center">
-      <LinkButton href={getRelativeLocaleUrl(locale, "posts")}>
-        {t.home.allPosts}
-        <IconArrowRight class="inline-block rtl:-rotate-180" />
-      </LinkButton>
+        <!-- 极简引导入口 -->
+        <div class="mt-10">
+          <LinkButton
+            href={getRelativeLocaleUrl(locale, "posts")}
+            class="group inline-flex items-center gap-1.5 rounded-full border border-border px-5 py-2 text-sm text-foreground/80 hover:text-accent hover:border-accent transition-all shadow-sm hover:shadow"
+          >
+            <span>进入文章列表</span>
+            <IconArrowRight class="inline-block size-4 transition-transform group-hover:translate-x-0.5 rtl:-rotate-180" />
+          </LinkButton>
+        </div>
+      </section>
+
+      <!-- 社交账号 -->
+      {socials.length > 0 && (
+        <div class="mt-4 flex justify-center border-t border-border/40 pt-6">
+          <Socials />
+        </div>
+      )}
     </div>
   </main>
+
   <Footer />
 </Layout>
-
-<script>
-  document.addEventListener("astro:page-load", () => {
-    const indexLayout = (document.querySelector("#main-content") as HTMLElement)
-      ?.dataset;
-    const baseRoot = import.meta.env.BASE_URL.replace(/\/?$/, "/");
-    if (indexLayout?.layout) {
-      sessionStorage.setItem("backUrl", indexLayout.homePath ?? baseRoot);
-    }
-  });
-</script>
