@@ -11,19 +11,19 @@ import config from "@/config";
 const { socials } = config;
 const locale = Astro.currentLocale ?? config.site.lang;
 
-// 首页呈现的诗词（呼应你的名字 midsummer-q · 盛夏时光）
-// 你可以随时在此修改为你喜爱的任意诗歌
-const poem = {
-  title: "夏意",
-  author: "苏舜钦",
-  dynasty: "宋",
-  lines: [
-    "别院深深夏席清，",
-    "石榴开遍透帘明。",
-    "树阴满地日当午，",
-    "梦觉流莺时一声。"
+// 詹姆斯·乔伊斯《都柏林人·死者》经典终章
+const literaryPiece = {
+  title: "死者",
+  originalTitle: "The Dead",
+  author: "詹姆斯·乔伊斯",
+  book: "《都柏林人》",
+  paragraphs: [
+    "窗玻璃上几声轻微的敲击声使他转向窗户。又开始下雪了。他睡意朦胧地望着银白与暗影交织的雪花，斜斜地飘落在路灯的光晕里。是时候启程西行了。",
+    "是的，报纸说得对：整个爱尔兰都在下雪。雪花飘落在黑暗的中央平原的每寸土地，飘落在无树的丘陵，轻柔地覆盖艾伦沼泽，再向西，轻轻地落入香农河幽暗的逆浪中。",
+    "雪花也落在山丘上那座孤寂教堂墓园的每个角落，迈克尔·富里就安息在那里。雪堆积在歪斜的十字架与墓碑上，堆积在小门栏的铁矛尖上，堆积在荒芜的荆棘丛中。",
+    "他的灵魂渐渐陷入昏沉，听见雪花穿越寰宇隐隐飘落，如同宿命的终章般，轻轻落在所有生者与逝者之上。"
   ],
-  quote: "万物繁茂，静听风吟。"
+  quote: "Falling faintly through the universe and faintly falling, upon all the living and the dead."
 };
 ---
 
@@ -34,38 +34,38 @@ const poem = {
     id="main-content"
     class="app-layout flex min-h-[calc(100vh-180px)] flex-col items-center justify-center py-12"
   >
-    <div class="w-full max-w-xl text-center">
-      <!-- 诗歌展示核心卡片区 -->
-      <section class="relative py-8 sm:py-14">
-        <!-- 诗词徽标 -->
+    <div class="w-full max-w-2xl text-center">
+      <!-- 文学段落核心区 -->
+      <section class="relative py-8 sm:py-12">
+        <!-- 徽标 -->
         <div class="mb-6 inline-flex items-center gap-2 rounded-full border border-border/80 bg-muted/40 px-3.5 py-1 text-xs text-muted-foreground font-mono">
           <span class="size-1.5 rounded-full bg-accent animate-pulse"></span>
-          <span>Midsummer · 诗意栖居</span>
+          <span>{literaryPiece.book} · 终章</span>
         </div>
 
-        <!-- 诗词标题与作者 -->
+        <!-- 篇名与作者 -->
         <h1 class="text-2xl font-bold tracking-widest text-foreground sm:text-3xl font-serif">
-          {poem.title}
+          {literaryPiece.title}
         </h1>
         <p class="mt-2 text-sm text-muted-foreground font-serif tracking-widest">
-          〔{poem.dynasty}〕{poem.author}
+          〔爱尔兰〕{literaryPiece.author} · {literaryPiece.originalTitle}
         </p>
 
-        <!-- 诗词正文行 -->
-        <div class="my-8 space-y-3.5 font-serif text-lg leading-relaxed text-foreground/90 sm:text-xl tracking-widest">
-          {poem.lines.map(line => (
-            <p class="transition-colors hover:text-accent cursor-default">{line}</p>
+        <!-- 经典正文段落 -->
+        <div class="my-8 space-y-4 font-serif text-[16px] sm:text-[17px] leading-relaxed sm:leading-loose text-foreground/90 text-left sm:text-justify tracking-wide px-2 sm:px-6">
+          {literaryPiece.paragraphs.map(p => (
+            <p class="indent-8 transition-colors hover:text-accent/90 cursor-default">{p}</p>
           ))}
         </div>
 
-        <!-- 心境附言 -->
-        {poem.quote && (
-          <p class="mt-8 text-xs text-muted-foreground/75 italic font-mono tracking-wider">
-            —— {poem.quote}
+        <!-- 英文原文回响 -->
+        {literaryPiece.quote && (
+          <p class="mt-8 text-xs text-muted-foreground/75 italic font-mono tracking-wider px-4">
+            “{literaryPiece.quote}”
           </p>
         )}
 
-        <!-- 极简引导入口 -->
+        <!-- 引导按钮 -->
         <div class="mt-10">
           <LinkButton
             href={getRelativeLocaleUrl(locale, "posts")}
@@ -77,7 +77,7 @@ const poem = {
         </div>
       </section>
 
-      <!-- 社交账号 -->
+      <!-- 社交图标 -->
       {socials.length > 0 && (
         <div class="mt-4 flex justify-center border-t border-border/40 pt-6">
           <Socials />
