@@ -1,5 +1,5 @@
 ---
-// PostFluidBanner.astro - 基于 @chenglou/pretext 的文章顶部动态流体交互横幅
+// PostFluidBanner.astro - 纯净无框的流体交互段落（与原生博客排版无缝融合）
 interface Props {
   text: string;
   title?: string;
@@ -12,36 +12,23 @@ const bannerText = text && text.trim().length > 0
 ---
 
 <div
-  class="post-fluid-banner border-border/80 bg-card/40 my-6 overflow-hidden rounded-xl border shadow-sm backdrop-blur transition-all"
+  class="post-fluid-banner my-6 w-full select-none"
   data-banner-text={bannerText}
 >
-  <!-- 极简状态微型栏 -->
-  <div class="border-border/50 bg-background/50 flex items-center justify-between border-b px-3.5 py-1.5 text-[11px] font-mono">
-    <div class="flex items-center gap-1.5 text-accent">
-      <span class="size-1.5 animate-pulse rounded-full bg-accent"></span>
-      <span class="font-sans font-medium">交互导读 · 流体排版</span>
-    </div>
-    <div class="text-muted-foreground flex items-center gap-2">
-      <span class="hidden sm:inline">微秒级 Pretext 避障</span>
-      <span class="text-accent/80 select-none">拖动光球体验 ✦</span>
-    </div>
-  </div>
-
-  <!-- 横幅画布 -->
-  <div class="relative w-full">
-    <canvas class="post-banner-canvas block w-full touch-none cursor-crosshair"></canvas>
-  </div>
+  <canvas class="post-banner-canvas block w-full touch-none cursor-pointer"></canvas>
 </div>
 
 <script>
   import {
+    prepare,
     prepareWithSegments,
+    layout,
     layoutNextLineRange,
     materializeLineRange,
     type LayoutCursor,
   } from "@chenglou/pretext";
 
-  function initPostBanners() {
+  function initSeamlessPostBanners() {
     const banners = document.querySelectorAll(".post-fluid-banner");
 
     banners.forEach(banner => {
@@ -58,27 +45,33 @@ const bannerText = text && text.trim().length > 0
       const renderCtx: CanvasRenderingContext2D = ctx;
 
       const rawText = container.dataset.bannerText || "";
-      const text = rawText + " —— 鼠标或手指可拖动发光球体，文本将随障碍物实时动态绕排。";
+      const text = rawText + " （流体交互体验：将鼠标或手指滑过本段文字，文字将如流水般实时避开光球）";
 
-      const font = '14.5px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-      const lineHeight = 26;
-      const padding = 16;
-      const ballRadius = 42;
+      const font = '16px "Google Sans Code", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+      const lineHeight = 30;
+      const ballRadius = 40;
 
+      let preparedMeasure = prepare(text, font);
       let preparedHandle = prepareWithSegments(text, font);
-      let ballX = 140;
-      let ballY = 95;
-      let targetX = 140;
-      let targetY = 95;
+
+      let ballX = 160;
+      let ballY = 60;
+      let targetX = 160;
+      let targetY = 60;
       let autoFloat = true;
-      let vx = 1.6;
-      let vy = 1.1;
+      let opacity = 0.85;
+      let vx = 1.2;
+      let vy = 0.8;
 
       function resize() {
         const rect = container.getBoundingClientRect();
         const width = rect.width || 600;
-        const height = width < 500 ? 190 : 205;
         const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+        // 使用 Pretext 纯数学直接计算段落自然高度
+        preparedMeasure = prepare(text, font);
+        const { height: calculatedHeight } = layout(preparedMeasure, width, lineHeight);
+        const height = Math.max(calculatedHeight + 36, 150);
 
         cvs.width = width * dpr;
         cvs.height = height * dpr;
@@ -115,85 +108,92 @@ const bannerText = text && text.trim().length > 0
 
       cvs.addEventListener("mousemove", onPointer);
       cvs.addEventListener("touchmove", onPointer, { passive: true });
+      cvs.addEventListener("mouseenter", () => { autoFloat = false; });
       cvs.addEventListener("mouseleave", () => { autoFloat = true; });
 
       function loop() {
-        // 页面跳转后安全退出循环
         if (!document.body.contains(cvs)) return;
 
         const rect = cvs.getBoundingClientRect();
         const width = rect.width;
         const height = rect.height;
 
+        const isDark = document.documentElement.classList.contains("dark") || 
+                       document.documentElement.getAttribute("data-theme") === "dark";
+
         if (autoFloat) {
           ballX += vx;
           ballY += vy;
-          if (ballX - ballRadius < padding || ballX + ballRadius > width - padding) vx = -vx;
-          if (ballY - ballRadius < padding || ballY + ballRadius > height - padding) vy = -vy;
+          if (ballX - ballRadius < 0 || ballX + ballRadius > width) vx = -vx;
+          if (ballY - ballRadius < 0 || ballY + ballRadius > height) vy = -vy;
+          opacity += (0.65 - opacity) * 0.05;
         } else {
-          ballX += (targetX - ballX) * 0.18;
-          ballY += (targetY - ballY) * 0.18;
+          ballX += (targetX - ballX) * 0.16;
+          ballY += (targetY - ballY) * 0.16;
+          opacity += (0.95 - opacity) * 0.1;
         }
 
         renderCtx.clearRect(0, 0, width, height);
 
-        // 绘制发光球体
+        // 柔和微光球体（与主题色调相融）
         const grad = renderCtx.createRadialGradient(
-          ballX - ballRadius * 0.25,
-          ballY - ballRadius * 0.25,
-          ballRadius * 0.1,
+          ballX - ballRadius * 0.2,
+          ballY - ballRadius * 0.2,
+          ballRadius * 0.05,
           ballX,
           ballY,
           ballRadius
         );
-        grad.addColorStop(0, "rgba(236, 72, 153, 0.9)");
-        grad.addColorStop(0.55, "rgba(139, 92, 246, 0.7)");
-        grad.addColorStop(1, "rgba(99, 102, 241, 0.12)");
+
+        if (isDark) {
+          grad.addColorStop(0, `rgba(255, 107, 1, ${0.9 * opacity})`);
+          grad.addColorStop(0.5, `rgba(168, 85, 247, ${0.65 * opacity})`);
+          grad.addColorStop(1, `rgba(33, 39, 55, 0)`);
+        } else {
+          grad.addColorStop(0, `rgba(0, 108, 172, ${0.85 * opacity})`);
+          grad.addColorStop(0.5, `rgba(99, 102, 241, ${0.5 * opacity})`);
+          grad.addColorStop(1, `rgba(253, 253, 253, 0)`);
+        }
 
         renderCtx.save();
         renderCtx.beginPath();
         renderCtx.arc(ballX, ballY, ballRadius, 0, Math.PI * 2);
         renderCtx.fillStyle = grad;
-        renderCtx.shadowColor = "rgba(168, 85, 247, 0.45)";
-        renderCtx.shadowBlur = 18;
+        renderCtx.shadowColor = isDark ? "rgba(255, 107, 1, 0.4)" : "rgba(0, 108, 172, 0.3)";
+        renderCtx.shadowBlur = 20;
         renderCtx.fill();
-        renderCtx.strokeStyle = "rgba(255, 255, 255, 0.35)";
-        renderCtx.lineWidth = 1;
-        renderCtx.stroke();
         renderCtx.restore();
 
-        // Pretext 纯算术避障排版
+        // 纯数学避障文本渲染（无框、天然对齐文章排版）
         if (preparedHandle) {
           renderCtx.font = font;
-          renderCtx.fillStyle = document.documentElement.classList.contains("dark")
-            ? "#d4d4d8"
-            : "#3f3f46";
+          renderCtx.fillStyle = isDark ? "#eaedf3" : "#282728";
           renderCtx.textBaseline = "top";
 
           let cursor: LayoutCursor = { segmentIndex: 0, graphemeIndex: 0 };
-          let y = padding;
-          const availableW = width - padding * 2;
+          let y = 6;
+          const availableW = width;
 
-          while (y < height - lineHeight + 6) {
+          while (y < height - lineHeight + 4) {
             const midY = y + lineHeight / 2;
             const dy = Math.abs(midY - ballY);
 
-            let lineStartX = padding;
+            let lineStartX = 0;
             let lineWidth = availableW;
 
-            if (dy < ballRadius + 6) {
-              const dx = Math.sqrt(Math.max(0, Math.pow(ballRadius + 10, 2) - dy * dy));
+            if (dy < ballRadius + 4) {
+              const dx = Math.sqrt(Math.max(0, Math.pow(ballRadius + 8, 2) - dy * dy));
               const obsLeft = ballX - dx;
               const obsRight = ballX + dx;
 
-              const leftRoom = Math.max(0, obsLeft - padding);
-              const rightRoom = Math.max(0, width - padding - obsRight);
+              const leftRoom = Math.max(0, obsLeft);
+              const rightRoom = Math.max(0, width - obsRight);
 
-              if (leftRoom > rightRoom && leftRoom > 90) {
-                lineStartX = padding;
+              if (leftRoom > rightRoom && leftRoom > 80) {
+                lineStartX = 0;
                 lineWidth = leftRoom;
-              } else if (rightRoom > 90) {
-                lineStartX = Math.max(padding, obsRight);
+              } else if (rightRoom > 80) {
+                lineStartX = obsRight;
                 lineWidth = rightRoom;
               }
             }
@@ -216,10 +216,10 @@ const bannerText = text && text.trim().length > 0
     });
   }
 
-  document.addEventListener("astro:page-load", initPostBanners);
+  document.addEventListener("astro:page-load", initSeamlessPostBanners);
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initPostBanners);
+    document.addEventListener("DOMContentLoaded", initSeamlessPostBanners);
   } else {
-    initPostBanners();
+    initSeamlessPostBanners();
   }
 </script>
