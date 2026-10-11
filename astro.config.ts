@@ -22,8 +22,7 @@ import { transformerFileName } from "./src/utils/transformers/fileName";
 import config from "./astro-paper.config";
 
 export default defineConfig({
-  site: "https://midsummer-q.github.io",
-  base: "/blog",
+  site: "https://blog-bh7.pages.dev",
   integrations: [
     mdx(),
     sitemap({

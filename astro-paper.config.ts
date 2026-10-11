@@ -2,7 +2,7 @@ import { defineAstroPaperConfig } from "./src/types/config";
 
 export default defineAstroPaperConfig({
   site: {
-    url: "https://midsummer-q.github.io/blog/",
+    url: "https://blog-bh7.pages.dev/",
     title: "Midsummer's Blog",
     description: "记录技术探索、计算机底层思考与日常学习笔记。",
     author: "midsummer-q",
