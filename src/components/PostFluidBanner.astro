@@ -1,0 +1,225 @@
+---
+// PostFluidBanner.astro - 基于 @chenglou/pretext 的文章顶部动态流体交互横幅
+interface Props {
+  text: string;
+  title?: string;
+}
+
+const { text, title } = Astro.props;
+const bannerText = text && text.trim().length > 0 
+  ? text 
+  : `${title ?? "技术随笔"}：记录关于底层逻辑、工程架构设计与编程实践的深度思考。`;
+---
+
+<div
+  class="post-fluid-banner border-border/80 bg-card/40 my-6 overflow-hidden rounded-xl border shadow-sm backdrop-blur transition-all"
+  data-banner-text={bannerText}
+>
+  <!-- 极简状态微型栏 -->
+  <div class="border-border/50 bg-background/50 flex items-center justify-between border-b px-3.5 py-1.5 text-[11px] font-mono">
+    <div class="flex items-center gap-1.5 text-accent">
+      <span class="size-1.5 animate-pulse rounded-full bg-accent"></span>
+      <span class="font-sans font-medium">交互导读 · 流体排版</span>
+    </div>
+    <div class="text-muted-foreground flex items-center gap-2">
+      <span class="hidden sm:inline">微秒级 Pretext 避障</span>
+      <span class="text-accent/80 select-none">拖动光球体验 ✦</span>
+    </div>
+  </div>
+
+  <!-- 横幅画布 -->
+  <div class="relative w-full">
+    <canvas class="post-banner-canvas block w-full touch-none cursor-crosshair"></canvas>
+  </div>
+</div>
+
+<script>
+  import {
+    prepareWithSegments,
+    layoutNextLineRange,
+    materializeLineRange,
+    type LayoutCursor,
+  } from "@chenglou/pretext";
+
+  function initPostBanners() {
+    const banners = document.querySelectorAll(".post-fluid-banner");
+
+    banners.forEach(banner => {
+      const container = banner as HTMLElement;
+      if (container.dataset.initialized === "true") return;
+      container.dataset.initialized = "true";
+
+      const canvas = container.querySelector(".post-banner-canvas") as HTMLCanvasElement | null;
+      if (!canvas) return;
+
+      const cvs: HTMLCanvasElement = canvas;
+      const ctx = cvs.getContext("2d");
+      if (!ctx) return;
+      const renderCtx: CanvasRenderingContext2D = ctx;
+
+      const rawText = container.dataset.bannerText || "";
+      const text = rawText + " —— 鼠标或手指可拖动发光球体，文本将随障碍物实时动态绕排。";
+
+      const font = '14.5px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+      const lineHeight = 26;
+      const padding = 16;
+      const ballRadius = 42;
+
+      let preparedHandle = prepareWithSegments(text, font);
+      let ballX = 140;
+      let ballY = 95;
+      let targetX = 140;
+      let targetY = 95;
+      let autoFloat = true;
+      let vx = 1.6;
+      let vy = 1.1;
+
+      function resize() {
+        const rect = container.getBoundingClientRect();
+        const width = rect.width || 600;
+        const height = width < 500 ? 190 : 205;
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+        cvs.width = width * dpr;
+        cvs.height = height * dpr;
+        cvs.style.width = `${width}px`;
+        cvs.style.height = `${height}px`;
+
+        renderCtx.scale(dpr, dpr);
+        preparedHandle = prepareWithSegments(text, font);
+
+        if (ballX > width - ballRadius) ballX = width / 2;
+        if (ballY > height - ballRadius) ballY = height / 2;
+      }
+
+      resize();
+      window.addEventListener("resize", resize);
+
+      function onPointer(e: MouseEvent | TouchEvent) {
+        autoFloat = false;
+        const rect = cvs.getBoundingClientRect();
+        let cx = 0;
+        let cy = 0;
+        if ("touches" in e) {
+          if (e.touches.length > 0) {
+            cx = e.touches[0].clientX;
+            cy = e.touches[0].clientY;
+          }
+        } else {
+          cx = e.clientX;
+          cy = e.clientY;
+        }
+        targetX = cx - rect.left;
+        targetY = cy - rect.top;
+      }
+
+      cvs.addEventListener("mousemove", onPointer);
+      cvs.addEventListener("touchmove", onPointer, { passive: true });
+      cvs.addEventListener("mouseleave", () => { autoFloat = true; });
+
+      function loop() {
+        // 页面跳转后安全退出循环
+        if (!document.body.contains(cvs)) return;
+
+        const rect = cvs.getBoundingClientRect();
+        const width = rect.width;
+        const height = rect.height;
+
+        if (autoFloat) {
+          ballX += vx;
+          ballY += vy;
+          if (ballX - ballRadius < padding || ballX + ballRadius > width - padding) vx = -vx;
+          if (ballY - ballRadius < padding || ballY + ballRadius > height - padding) vy = -vy;
+        } else {
+          ballX += (targetX - ballX) * 0.18;
+          ballY += (targetY - ballY) * 0.18;
+        }
+
+        renderCtx.clearRect(0, 0, width, height);
+
+        // 绘制发光球体
+        const grad = renderCtx.createRadialGradient(
+          ballX - ballRadius * 0.25,
+          ballY - ballRadius * 0.25,
+          ballRadius * 0.1,
+          ballX,
+          ballY,
+          ballRadius
+        );
+        grad.addColorStop(0, "rgba(236, 72, 153, 0.9)");
+        grad.addColorStop(0.55, "rgba(139, 92, 246, 0.7)");
+        grad.addColorStop(1, "rgba(99, 102, 241, 0.12)");
+
+        renderCtx.save();
+        renderCtx.beginPath();
+        renderCtx.arc(ballX, ballY, ballRadius, 0, Math.PI * 2);
+        renderCtx.fillStyle = grad;
+        renderCtx.shadowColor = "rgba(168, 85, 247, 0.45)";
+        renderCtx.shadowBlur = 18;
+        renderCtx.fill();
+        renderCtx.strokeStyle = "rgba(255, 255, 255, 0.35)";
+        renderCtx.lineWidth = 1;
+        renderCtx.stroke();
+        renderCtx.restore();
+
+        // Pretext 纯算术避障排版
+        if (preparedHandle) {
+          renderCtx.font = font;
+          renderCtx.fillStyle = document.documentElement.classList.contains("dark")
+            ? "#d4d4d8"
+            : "#3f3f46";
+          renderCtx.textBaseline = "top";
+
+          let cursor: LayoutCursor = { segmentIndex: 0, graphemeIndex: 0 };
+          let y = padding;
+          const availableW = width - padding * 2;
+
+          while (y < height - lineHeight + 6) {
+            const midY = y + lineHeight / 2;
+            const dy = Math.abs(midY - ballY);
+
+            let lineStartX = padding;
+            let lineWidth = availableW;
+
+            if (dy < ballRadius + 6) {
+              const dx = Math.sqrt(Math.max(0, Math.pow(ballRadius + 10, 2) - dy * dy));
+              const obsLeft = ballX - dx;
+              const obsRight = ballX + dx;
+
+              const leftRoom = Math.max(0, obsLeft - padding);
+              const rightRoom = Math.max(0, width - padding - obsRight);
+
+              if (leftRoom > rightRoom && leftRoom > 90) {
+                lineStartX = padding;
+                lineWidth = leftRoom;
+              } else if (rightRoom > 90) {
+                lineStartX = Math.max(padding, obsRight);
+                lineWidth = rightRoom;
+              }
+            }
+
+            const range = layoutNextLineRange(preparedHandle, cursor, lineWidth);
+            if (!range) break;
+
+            const line = materializeLineRange(preparedHandle, range);
+            renderCtx.fillText(line.text, lineStartX, y);
+
+            cursor = range.end;
+            y += lineHeight;
+          }
+        }
+
+        requestAnimationFrame(loop);
+      }
+
+      requestAnimationFrame(loop);
+    });
+  }
+
+  document.addEventListener("astro:page-load", initPostBanners);
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initPostBanners);
+  } else {
+    initPostBanners();
+  }
+</script>
