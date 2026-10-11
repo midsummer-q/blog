@@ -6,6 +6,11 @@
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
 @layer base {
+  html,
+  body {
+    transition: background-color 220ms ease, color 220ms ease;
+  }
+
   * {
     @apply border-border outline-accent/75;
     scrollbar-width: auto;
@@ -22,16 +27,24 @@
   }
 }
 
+@utility max-w-nav {
+  max-width: 840px;
+}
+
+@utility max-w-editorial {
+  max-width: 620px;
+}
+
 @utility max-w-app {
   @apply max-w-3xl;
 }
 
 @utility app-layout {
-  @apply max-w-app mx-auto w-full px-4;
+  @apply max-w-nav mx-auto w-full px-4 sm:px-6;
 }
 
 @utility active-nav {
-  @apply underline decoration-wavy decoration-2 underline-offset-8;
+  @apply underline decoration-1 underline-offset-6 decoration-foreground/70;
 }
 
 :target {

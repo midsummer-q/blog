@@ -8,27 +8,28 @@
   --color-muted-foreground: var(--muted-foreground);
   --color-border: var(--border);
   --font-app: var(--font-google-sans-code);
+  --font-serif: "Noto Serif SC", "Source Han Serif SC", "Songti SC", "SimSun", "STSong", Georgia, Cambria, serif;
 }
 
-/* Light theme values */
+/* Light theme values - 暖纸白 · 文学极简 */
 :root,
 [data-theme="light"] {
-  --background: #fdfdfd;
-  --foreground: #282728;
-  --accent: #006cac;
-  --accent-foreground: #ffffff;
-  --muted: #e6e6e6;
-  --muted-foreground: #6b7280;
-  --border: #ece9e9;
+  --background: #faf8f5;
+  --foreground: #2b2e2b;
+  --accent: #3b5a75;
+  --accent-foreground: #faf8f5;
+  --muted: #eeebe5;
+  --muted-foreground: #6e736e;
+  --border: #e6e7e2;
 }
 
-/* Dark theme values */
+/* Dark theme values - 深石墨色 · 暖灰夜读 */
 [data-theme="dark"] {
-  --background: #212737;
-  --foreground: #eaedf3;
-  --accent: #ff6b01;
-  --accent-foreground: #ffffff;
-  --muted: #343f60;
-  --muted-foreground: #afb9ca;
-  --border: #ab4b08;
+  --background: #17191b;
+  --foreground: #e6e4df;
+  --accent: #d89b65;
+  --accent-foreground: #17191b;
+  --muted: #22252a;
+  --muted-foreground: #8f949e;
+  --border: #282b30;
 }
