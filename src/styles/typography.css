@@ -22,7 +22,20 @@
     ol,
     ul,
     figcaption,
-    table,
+    table {
+      @apply text-foreground w-full my-6 clear-both;
+      display: table !important;
+      min-width: 100% !important;
+    }
+
+    th, td {
+      @apply border border-border p-2.5 text-left;
+    }
+
+    th {
+      @apply bg-muted/40 font-semibold;
+    }
+
     code {
       @apply text-foreground;
     }

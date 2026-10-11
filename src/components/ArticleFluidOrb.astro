@@ -11,12 +11,12 @@
 <style>
   .fluid-orb-wrapper {
     float: left;
-    width: 125px;
-    height: 125px;
+    width: 100px;
+    height: 100px;
     shape-outside: circle(50%);
     clip-path: circle(50%);
     border-radius: 50%;
-    margin-right: 1.5rem;
+    margin-right: 1.25rem;
     margin-bottom: 0.5rem;
     margin-top: 0px;
     cursor: grab;
@@ -25,7 +25,8 @@
     z-index: 10;
     transition: margin-top 0.3s cubic-bezier(0.16, 1, 0.3, 1),
                 margin-left 0.25s ease-out,
-                margin-right 0.25s ease-out;
+                margin-right 0.25s ease-out,
+                opacity 0.2s ease;
   }
 
   .fluid-orb-wrapper:active {
@@ -36,7 +37,7 @@
   .fluid-orb-wrapper.float-right {
     float: right;
     margin-right: 0;
-    margin-left: 1.5rem;
+    margin-left: 1.25rem;
   }
 
   .fluid-orb-core {
@@ -81,6 +82,16 @@
       margin-left: 1rem;
     }
   }
+
+  /* 彻底保护表格、代码块与大标题，严禁被浮动光球挤压挤扁 */
+  :global(#article table),
+  :global(#article pre),
+  :global(#article .astro-code),
+  :global(#article blockquote),
+  :global(#article h2),
+  :global(#article h3) {
+    clear: both !important;
+  }
 </style>
 
 <script>
@@ -98,6 +109,15 @@
 
     // 当鼠标在文章正文中移动时，发光球体灵敏跟随并触发段落避障绕排
     function onArticleMove(e: MouseEvent | TouchEvent) {
+      // 如果光标悬停在表格、代码块、引用块或大标题上，光球自动降低透明度并静止，保障阅读舒适度
+      const target = e.target as HTMLElement | null;
+      if (target && target.closest("table, pre, .astro-code, h2, h3, blockquote")) {
+        orbEl.style.opacity = "0.15";
+        return;
+      } else {
+        orbEl.style.opacity = "1";
+      }
+
       const rect = articleEl.getBoundingClientRect();
       let clientX = 0;
       let clientY = 0;
