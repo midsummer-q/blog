@@ -1,37 +1,30 @@
 ---
-title: "About"
-description: "A bit about me and this blog."
+title: "关于我"
+description: "关于博主与这个博客的二三事。"
 ---
 
-AstroPaper is a minimal, accessible and SEO-friendly blog theme built with [Astro](https://astro.build/) and [Tailwind CSS](https://tailwindcss.com/).
+你好！我是 **midsummer-q**，欢迎来到我的个人博客。
 
-![Astro Paper](@/assets/images/astropaper-og.jpg)
+这里是我记录技术思考、编程实践与知识沉淀的数字花园。
 
-AstroPaper provides a solid foundation for blogs, or even portfolios\_ with full markdown support, built-in dark mode, and a clean layout that works out-of-the-box.
+## 为什么写博客？
 
-The blog posts in this theme also serve as guides, docs or example articles\_ making AstroPaper a flexible starting point for your next content-driven site.
+在技术迭代日新月异的当下，很多碎片化的知识很容易被遗忘。我坚信：**“把一件事情向别人讲清楚，才是真正掌握了它”**。
 
-## Features
+这个博客主要关注：
+- **编程语言与底层机制**：探讨 Python、C/C++、Go 等语言的特性解析与设计哲学。
+- **软件架构与工程实践**：系统设计、算法思想、性能优化与生产实践。
+- **技术随笔与效率工具**：自动化工作流、极客探索与日常学习沉淀。
 
-AstroPaper comes with a set of useful features that make content publishing easy and effective:
+## 关于本站
 
-- SEO-friendly
-- Fast performance
-- Light & dark mode
-- Highly customizable
-- Organizable blog posts
-- Responsive & accessible
-- Static search with [PageFind](https://pagefind.app/)
-- Automatic social image generation
+- **架构**：基于 [Astro](https://astro.build/) 现代化静态站点框架构建
+- **主题**：定制自 [AstroPaper](https://github.com/satnaing/astro-paper)
+- **公式排版**：集成 KaTeX，支持原生 LaTeX 数学公式渲染
+- **全站搜索**：集成 Pagefind 静态全文秒级搜索
+- **持续部署**：代码托管于 [GitHub](https://github.com/midsummer-q/blog)，通过 GitHub Actions 自动化 CI/CD 持续构建发布
 
-and so much more.
+## 联系我
 
-## Show your support
-
-If you like [AstroPaper](https://github.com/satnaing/astro-paper), consider giving it a star ⭐️.
-
-Found a bug 🐛 or have an improvement ✨ in mind? Feel free to open an [issue](https://github.com/satnaing/astro-paper/issues), submit a [pull request](https://github.com/satnaing/astro-paper/pulls) or start a [discussion](https://github.com/satnaing/astro-paper/discussions).
-
-If you find this theme helpful, you can also [sponsor me on GitHub](https://github.com/sponsors/satnaing) or [buy me a coffee](https://buymeacoffee.com/satnaing) to show your support — every penny counts.
-
-Kyay zuu! 🙏🏼
+- **GitHub**：[@midsummer-q](https://github.com/midsummer-q)
+- **邮箱**：[1776122348@qq.com](mailto:1776122348@qq.com)
