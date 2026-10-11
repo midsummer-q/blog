@@ -22,10 +22,12 @@
     ol,
     ul,
     figcaption,
+    code {
+      @apply text-foreground;
+    }
+
     table {
-      @apply text-foreground w-full my-6 clear-both;
-      display: table !important;
-      min-width: 100% !important;
+      @apply text-foreground w-full my-6 border-collapse;
     }
 
     th, td {
@@ -34,10 +36,6 @@
 
     th {
       @apply bg-muted/40 font-semibold;
-    }
-
-    code {
-      @apply text-foreground;
     }
 
     .katex-display {
