@@ -14,7 +14,7 @@ import ShareLinks from "./_components/ShareLinks.astro";
 import BackButton from "./_components/BackButton.astro";
 import BackToTopButton from "./_components/BackToTopButton.astro";
 import AdjacentPostNav from "./_components/AdjacentPostNav.astro";
-import PostFluidBanner from "@/components/PostFluidBanner.astro";
+import ArticleFluidOrb from "@/components/ArticleFluidOrb.astro";
 import config from "@/config";
 
 export async function getStaticPaths() {
@@ -135,9 +135,6 @@ const ogImage = ogImageUrl
       <EditPost {hideEditPost} {post} class="max-sm:hidden" />
     </div>
 
-    <!-- 每篇文章顶部的 Pretext 动态流体交互横幅 -->
-    <PostFluidBanner text={description} title={title} />
-
     <article
       id="article"
       class:list={[
@@ -146,6 +143,8 @@ const ogImage = ogImageUrl
         "prose-pre:bg-(--shiki-light-bg) dark:prose-pre:bg-(--shiki-dark-bg)",
       ]}
     >
+      <!-- 贯穿全篇正文的流体避障光球 -->
+      <ArticleFluidOrb />
       <Content />
     </article>
 

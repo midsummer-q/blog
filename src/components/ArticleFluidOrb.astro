@@ -1,0 +1,159 @@
+---
+// ArticleFluidOrb.astro - 贯穿全篇正文的 DOM 物理流体避障发光球体
+---
+
+<div id="fluid-orb-wrapper" class="fluid-orb-wrapper" aria-hidden="true" title="拖动或移动鼠标体验全篇文字流体避让">
+  <div class="fluid-orb-core">
+    <div class="fluid-orb-pulse"></div>
+  </div>
+</div>
+
+<style>
+  .fluid-orb-wrapper {
+    float: left;
+    width: 125px;
+    height: 125px;
+    shape-outside: circle(50%);
+    clip-path: circle(50%);
+    border-radius: 50%;
+    margin-right: 1.5rem;
+    margin-bottom: 0.5rem;
+    margin-top: 0px;
+    cursor: grab;
+    user-select: none;
+    position: relative;
+    z-index: 10;
+    transition: margin-top 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                margin-left 0.25s ease-out,
+                margin-right 0.25s ease-out;
+  }
+
+  .fluid-orb-wrapper:active {
+    cursor: grabbing;
+    transform: scale(0.96);
+  }
+
+  .fluid-orb-wrapper.float-right {
+    float: right;
+    margin-right: 0;
+    margin-left: 1.5rem;
+  }
+
+  .fluid-orb-core {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    background: radial-gradient(circle at 35% 35%, rgba(0, 108, 172, 0.95), rgba(99, 102, 241, 0.8) 60%, rgba(139, 92, 246, 0.3) 100%);
+    box-shadow: 0 0 32px rgba(0, 108, 172, 0.45), inset 0 0 15px rgba(255, 255, 255, 0.45);
+    backdrop-filter: blur(10px);
+  }
+
+  :global(.dark) .fluid-orb-core,
+  :global([data-theme="dark"]) .fluid-orb-core {
+    background: radial-gradient(circle at 35% 35%, rgba(255, 107, 1, 0.95), rgba(168, 85, 247, 0.8) 60%, rgba(33, 39, 55, 0.4) 100%);
+    box-shadow: 0 0 35px rgba(255, 107, 1, 0.5), inset 0 0 16px rgba(255, 255, 255, 0.35);
+  }
+
+  .fluid-orb-pulse {
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(255, 255, 255, 0.4);
+    animation: orb-pulse-anim 3s ease-in-out infinite alternate;
+  }
+
+  @keyframes orb-pulse-anim {
+    0% { transform: scale(0.96); opacity: 0.5; }
+    100% { transform: scale(1.04); opacity: 0.9; }
+  }
+
+  @media (max-width: 640px) {
+    .fluid-orb-wrapper {
+      width: 95px;
+      height: 95px;
+      margin-right: 1rem;
+    }
+    .fluid-orb-wrapper.float-right {
+      margin-left: 1rem;
+    }
+  }
+</style>
+
+<script>
+  function initArticleFluidOrb() {
+    const orb = document.getElementById("fluid-orb-wrapper");
+    const article = document.getElementById("article");
+    if (!orb || !article) return;
+
+    const orbEl: HTMLElement = orb;
+    const articleEl: HTMLElement = article;
+
+    let isDragging = false;
+    let targetY = 0;
+    let isFloatingRight = false;
+
+    // 当鼠标在文章正文中移动时，发光球体灵敏跟随并触发段落避障绕排
+    function onArticleMove(e: MouseEvent | TouchEvent) {
+      const rect = articleEl.getBoundingClientRect();
+      let clientX = 0;
+      let clientY = 0;
+
+      if ("touches" in e) {
+        if (e.touches.length > 0) {
+          clientX = e.touches[0].clientX;
+          clientY = e.touches[0].clientY;
+        }
+      } else {
+        clientX = e.clientX;
+        clientY = e.clientY;
+      }
+
+      // 计算鼠标相对文章顶部的 Y 轴偏移
+      const relY = clientY - rect.top;
+      const maxY = Math.max(0, articleEl.clientHeight - orbEl.clientHeight - 40);
+      targetY = Math.max(0, Math.min(relY - orbEl.clientHeight / 2, maxY));
+
+      // 根据鼠标偏左还是偏右，动态切换左右浮动避让
+      const relX = clientX - rect.left;
+      if (relX > rect.width * 0.58 && !isFloatingRight) {
+        isFloatingRight = true;
+        orbEl.classList.add("float-right");
+      } else if (relX < rect.width * 0.42 && isFloatingRight) {
+        isFloatingRight = false;
+        orbEl.classList.remove("float-right");
+      }
+
+      orbEl.style.marginTop = `${Math.round(targetY)}px`;
+    }
+
+    // 触摸拖动支持
+    orbEl.addEventListener("touchstart", () => { isDragging = true; }, { passive: true });
+    window.addEventListener("touchend", () => { isDragging = false; }, { passive: true });
+
+    articleEl.addEventListener("mousemove", onArticleMove);
+    articleEl.addEventListener("touchmove", onArticleMove, { passive: true });
+
+    // 读者滚动阅读时，球体温柔贴合视口自然滑行
+    window.addEventListener("scroll", () => {
+      if (isDragging) return;
+      const rect = articleEl.getBoundingClientRect();
+      if (rect.top < 150 && rect.bottom > 200) {
+        const viewY = Math.max(0, 160 - rect.top);
+        const maxY = Math.max(0, articleEl.clientHeight - orbEl.clientHeight - 40);
+        targetY = Math.min(viewY, maxY);
+        orbEl.style.marginTop = `${Math.round(targetY)}px`;
+      }
+    }, { passive: true });
+  }
+
+  document.addEventListener("astro:page-load", initArticleFluidOrb);
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initArticleFluidOrb);
+  } else {
+    initArticleFluidOrb();
+  }
+</script>
