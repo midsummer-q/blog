@@ -3,7 +3,6 @@ import { getRelativeLocaleUrl } from "astro:i18n";
 import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
-import JoyceFluidManuscript from "@/components/JoyceFluidManuscript.astro";
 import config from "@/config";
 
 const locale = Astro.currentLocale ?? config.site.lang;
@@ -54,13 +53,10 @@ const literaryPiece = {
         <div class="w-7 h-[1px] bg-border mx-auto mt-6" aria-hidden="true"></div>
       </header>
 
-      <!-- 核心：基于 Pretext 槽位雕刻算法的全篇动态避障流体排版手稿 -->
-      <JoyceFluidManuscript paragraphs={literaryPiece.paragraphs} />
-
-      <!-- 语义化隐藏备份，保证 SEO 与无障碍可访问性 -->
-      <div class="sr-only">
+      <!-- 经典正文排版（严格遵循出版级参数：字号 16-16.5px，行高 1.98，字距 0.02em，段距 24px，缩进 2em） -->
+      <div class="font-serif text-[16px] sm:text-[16.5px] leading-[1.98] tracking-[0.02em] text-foreground/90 text-left sm:text-justify space-y-6">
         {literaryPiece.paragraphs.map(p => (
-          <p>{p}</p>
+          <p class="indent-[2em]">{p}</p>
         ))}
       </div>
 
