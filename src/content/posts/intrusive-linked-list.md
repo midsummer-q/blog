@@ -245,15 +245,19 @@ LLVM 专门研发了 `llvm::ilist`，配合其定制的内存池分配器（`Bum
 
 ## 六、 延伸阅读与经典资源
 
-想要进一步研读侵入式链表与高性能容器设计的读者，强烈推荐以下经典材料：
+想要进一步研读侵入式链表与高性能容器设计的读者，强烈推荐以下经典材料（所有链接均经过在线验证）：
 
-1. **Gustavo Duarte 的图解神作：[Kernel Data Structures: Linked Lists](https://manybutfinite.com/post/kernel-data-structures-linked-lists/)**
-   * *推荐理由*：系统图解了双向循环链表与内存地址回溯的过程，是学习 `container_of` 与内存偏移的最佳视觉教程。
-2. **Boost.Intrusive 官方指南：[Intrusive and non-intrusive containers](https://www.boost.org/doc/libs/release/doc/html/intrusive/intrusive_vs_nointrusive.html)**
-   * *推荐理由*：Boost 官方对两类容器在异常安全性、内存池契合度、开销与代码膨胀等维度的权威辩证论述。
-3. **Eli Bendersky 的经典博客：[Intrusive linked lists in C++](https://eli.thegreenplace.net/2007/04/05/intrusive-linked-lists-in-c)**
-   * *推荐理由*：深入讨论了从 C 语言宏方案向现代 C++ 面向对象与模板体系迁移时的关键设计与类型安全。
-4. **Linux 内核开源实现：[include/linux/list.h](https://github.com/torvalds/linux/blob/master/include/linux/list.h)**
+1. **Boost.Intrusive 官方指南：[Intrusive and non-intrusive containers](https://www.boost.org/doc/libs/1_86_0/doc/html/intrusive/intrusive_vs_nontrusive.html)**
+   * *推荐理由*：Boost 官方对两类容器在异常安全性（No-throw）、内存池契合度、开销与代码膨胀等维度的权威辩证论述。
+2. **Linux Insides 核心剖析：[Linux insides - Linked Lists](https://0xax.gitbooks.io/linux-insides/content/DataStructures/linux-datastructures-1.html)**
+   * *推荐理由*：GitHub 著名硬核开源书《linux-insides》中的经典章节，深入剖析了 `list_head` 循环链表的数据结构布局、操作宏与初始化机制。
+3. **KernelNewbies 经典教学：[KernelNewbies FAQ - How does the kernel implements linked lists?](https://kernelnewbies.org/FAQ/LinkedLists)**
+   * *推荐理由*：Linux 社区公认最通俗易懂的内核双向链表指南，用浅显的语言与 C 语言图解揭秘了 `container_of` 的本质。
+4. **Game Developer 经典专题：[In-Depth: Intrusive Lists](https://www.gamedeveloper.com/programming/in-depth-intrusive-lists)**
+   * *推荐理由*：游戏引擎架构师倾力撰写的深度文章，从 Cache 缺失、堆内存碎片、多集合引用与 $O(1)$ 删除等维度，详细论述了为何游戏开发中必须使用侵入式数据结构。
+5. **Data Structures in Practice 实战指南：[Intrusive Linked Lists](https://www.data-structures-in-practice.com/intrusive-linked-lists/)**
+   * *推荐理由*：通过图文并茂的渐进式演练，从非侵入式到侵入式一步步推导，手把手实现工业级现代 C++ 侵入式链表。
+6. **Linux 内核开源实现：[include/linux/list.h](https://github.com/torvalds/linux/blob/master/include/linux/list.h)**
    * *推荐理由*：仅有几百行纯 C 代码，却支撑起了世界上最庞大的开源操作系统，代码简洁利落，堪称极简主义工程典范。
-5. **LLVM 基础架构源码：[llvm/include/llvm/ADT/ilist.h](https://github.com/llvm/llvm-project/blob/main/llvm/include/llvm/ADT/ilist.h)**
+7. **LLVM 基础架构源码：[llvm/include/llvm/ADT/ilist.h](https://github.com/llvm/llvm-project/blob/main/llvm/include/llvm/ADT/ilist.h)**
    * *推荐理由*：现代编译器工程将侵入式容器与现代 C++ 模板元编程、定制内存池分配器完美融合的典范。
