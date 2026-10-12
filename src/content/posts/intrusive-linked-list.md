@@ -27,7 +27,7 @@ struct Node {
 
 这种设计符合面向对象封装和抽象数据类型（ADT）的直觉：**容器负责包装节点，节点负责持有数据**。
 
-但在现代操作系统内核（如 Linux 的 `list_head`）、顶级编译器（如 LLVM 的 `ilist`）、游戏引擎核心以及高频交易系统中，你几乎看不到这种“教科书式”的链表。取而代之的，是一种被称为**侵入式链表（Intrusive Linked List）**的“奇行种”。
+但在现代操作系统内核（如 Linux 的 `list_head`）、顶级编译器（如 LLVM 的 `ilist`）、游戏引擎核心以及高频交易系统中，你几乎看不到这种“教科书式”的链表。取而代之的，是一种被称为 **侵入式链表（Intrusive Linked List）** 的“奇行种”。
 
 为什么最追求极致性能的工业级系统，会纷纷抛弃看似优雅的标准链表？它背后的数学与工程考量究竟是什么？
 
@@ -247,11 +247,13 @@ LLVM 专门研发了 `llvm::ilist`，配合其定制的内存池分配器（`Bum
 
 想要进一步研读侵入式链表与高性能容器设计的读者，强烈推荐以下经典材料：
 
-1. **Gustavo Duarte 的图解神作：*Linux Kernel Linked List***
-   * *推荐理由*：系统图解了双向循环链表与内存地址回溯的过程，是学习 `container_of` 的最佳视觉教程。
-2. **Boost.Intrusive 官方文档 — *Intrusive and non-intrusive containers***
-   * *推荐理由*：Boost 官方对两类容器在异常安全性、内存池契合度、开销与代码膨胀等方面的权威辩证论述。
-3. **Linux 内核源码 `include/linux/list.h`**
+1. **Gustavo Duarte 的图解神作：[Kernel Data Structures: Linked Lists](https://manybutfinite.com/post/kernel-data-structures-linked-lists/)**
+   * *推荐理由*：系统图解了双向循环链表与内存地址回溯的过程，是学习 `container_of` 与内存偏移的最佳视觉教程。
+2. **Boost.Intrusive 官方指南：[Intrusive and non-intrusive containers](https://www.boost.org/doc/libs/release/doc/html/intrusive/intrusive_vs_nointrusive.html)**
+   * *推荐理由*：Boost 官方对两类容器在异常安全性、内存池契合度、开销与代码膨胀等维度的权威辩证论述。
+3. **Eli Bendersky 的经典博客：[Intrusive linked lists in C++](https://eli.thegreenplace.net/2007/04/05/intrusive-linked-lists-in-c)**
+   * *推荐理由*：深入讨论了从 C 语言宏方案向现代 C++ 面向对象与模板体系迁移时的关键设计与类型安全。
+4. **Linux 内核开源实现：[include/linux/list.h](https://github.com/torvalds/linux/blob/master/include/linux/list.h)**
    * *推荐理由*：仅有几百行纯 C 代码，却支撑起了世界上最庞大的开源操作系统，代码简洁利落，堪称极简主义工程典范。
-4. **LLVM 源码 `llvm/include/llvm/ADT/ilist.h`**
-   * *推荐理由*：现代 C++ 工业界将侵入式容器与现代模板元编程完美结合的最佳实践范例。
+5. **LLVM 基础架构源码：[llvm/include/llvm/ADT/ilist.h](https://github.com/llvm/llvm-project/blob/main/llvm/include/llvm/ADT/ilist.h)**
+   * *推荐理由*：现代编译器工程将侵入式容器与现代 C++ 模板元编程、定制内存池分配器完美融合的典范。
