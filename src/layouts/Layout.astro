@@ -93,6 +93,8 @@ const rssHref = getRelativeLocaleUrl(
     <!-- Extra head content injected by child layouts (e.g. JSON-LD, article meta) -->
     <slot name="head" />
 
+    <!-- Search engine verifications -->
+    <meta name="msvalidate.01" content="49892F311C1E4A053EB2ACA5903F5540" />
     {
       site.googleVerification && (
         <meta
