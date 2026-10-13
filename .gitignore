@@ -32,3 +32,6 @@ public/pagefind
 
 # docker compose
 compose.override.yaml
+
+# zcode
+.zcode/

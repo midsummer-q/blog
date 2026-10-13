@@ -10,6 +10,9 @@ tags:
   - C++
   - 系统级编程
   - 架构设计
+series:
+  name: 计算机底层与设计哲学
+  order: 2
 description: 为什么教科书里的 std::list 在 Linux 内核、游戏引擎和 LLVM 架构中难觅踪影？本文结合 Linux container_of 宏黑魔法、Boost.Intrusive 哲学与现代 CPU 缓存机制，全面拆解侵入式链表的设计精髓与工程取舍。
 ---
 

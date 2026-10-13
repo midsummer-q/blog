@@ -93,6 +93,15 @@ const isActive = (path: string) => {
         </li>
         <li class="col-span-2">
           <a
+            href={getRelativeLocaleUrl(locale, "series")}
+            class="hover:text-accent hover:underline hover:decoration-foreground/30 hover:underline-offset-6 transition-colors duration-150"
+            class:list={{ "active-nav": isActive("/series") }}
+          >
+            {t.nav.series ?? "专栏"}
+          </a>
+        </li>
+        <li class="col-span-2">
+          <a
             href={getRelativeLocaleUrl(locale, "lab")}
             class="hover:text-accent hover:underline hover:decoration-foreground/30 hover:underline-offset-6 transition-colors duration-150"
             class:list={{ "active-nav": isActive("/lab") }}

@@ -1,0 +1,78 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { getPostSeriesInfo, getPostsBySeries } from "@/utils/getSeries";
+import { getPostUrl } from "@/utils/getPostPaths";
+import { slugifyStr } from "@/utils/slugify";
+import config from "@/config";
+
+interface Props {
+  currentPost: CollectionEntry<"posts">;
+  allPosts: CollectionEntry<"posts">[];
+}
+
+const { currentPost, allPosts } = Astro.props;
+const seriesInfo = getPostSeriesInfo(currentPost.data.series);
+if (!seriesInfo) return null;
+
+const seriesPosts = getPostsBySeries(allPosts, seriesInfo.name);
+const seriesSlug = slugifyStr(seriesInfo.name);
+const locale = Astro.currentLocale ?? config.site.lang;
+---
+
+<div class="border-border/70 bg-accent/5 my-6 rounded-lg border p-4 sm:p-5">
+  <div
+    class="border-border/40 flex items-center justify-between gap-2 border-b pb-3"
+  >
+    <div class="flex items-center gap-2">
+      <span class="text-lg">📚</span>
+      <div>
+        <span
+          class="text-muted-foreground text-xs font-semibold tracking-wider uppercase"
+          >专栏系列</span
+        >
+        <h3 class="text-foreground text-base font-bold">
+          <a
+            href={`${import.meta.env.BASE_URL.replace(/\/+$/, "")}/series/${seriesSlug}/`}
+            class="hover:text-accent transition-colors hover:underline"
+          >
+            {seriesInfo.name}
+          </a>
+        </h3>
+      </div>
+    </div>
+    <span class="text-muted-foreground text-xs">共 {seriesPosts.length} 篇</span
+    >
+  </div>
+
+  <ol class="mt-3 space-y-1.5 text-sm">
+    {
+      seriesPosts.map((post, idx) => {
+        const isCurrent = post.id === currentPost.id;
+        const postUrl = getPostUrl(post.id, post.filePath, locale);
+
+        return (
+          <li class="flex items-baseline gap-2">
+            <span class="text-muted-foreground w-4 shrink-0 text-right font-mono text-xs">
+              {idx + 1}.
+            </span>
+            {isCurrent ? (
+              <span class="text-accent flex items-center gap-1.5 font-semibold">
+                <span>{post.data.title}</span>
+                <span class="text-accent/80 border-accent/40 rounded border px-1.5 py-0.5 text-[11px] font-normal">
+                  当前篇
+                </span>
+              </span>
+            ) : (
+              <a
+                href={postUrl}
+                class="text-foreground/80 hover:text-accent line-clamp-1 transition-colors hover:underline"
+              >
+                {post.data.title}
+              </a>
+            )}
+          </li>
+        );
+      })
+    }
+  </ol>
+</div>

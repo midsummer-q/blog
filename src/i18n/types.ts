@@ -7,6 +7,7 @@ export interface UIStrings {
     archives: string;
     search: string;
     lab?: string;
+    series?: string;
   };
   post: {
     publishedAt: string;

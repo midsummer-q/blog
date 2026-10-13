@@ -5,6 +5,9 @@ import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
 import Datetime from "@/components/Datetime.astro";
 import Tag from "@/components/Tag.astro";
+import TableOfContents from "@/components/TableOfContents.astro";
+import SeriesCard from "@/components/SeriesCard.astro";
+import Comments from "@/components/Comments.astro";
 import { getPostSlug, getPostUrl } from "@/utils/getPostPaths";
 import { getSortedPosts } from "@/utils/getSortedPosts";
 import { slugifyStr } from "@/utils/slugify";
@@ -24,6 +27,7 @@ export async function getStaticPaths() {
     params: { slug: getPostSlug(post.id, post.filePath) },
     props: {
       post,
+      allPosts: sortedPosts,
       // sortedPosts is newest-first, so "older" (prev) is a higher index
       // and "newer" (next) is a lower index.
       prevPost:
@@ -54,11 +58,12 @@ type AdjacentPost = {
 
 type Props = {
   post: CollectionEntry<"posts">;
+  allPosts: CollectionEntry<"posts">[];
   prevPost: AdjacentPost;
   nextPost: AdjacentPost;
 };
 
-const { post, prevPost, nextPost } = Astro.props;
+const { post, allPosts, prevPost, nextPost } = Astro.props;
 const locale = Astro.currentLocale ?? config.site.lang;
 
 const {
@@ -73,7 +78,7 @@ const {
   hideEditPost,
 } = post.data;
 
-const { Content } = await render(post);
+const { Content, headings } = await render(post);
 
 let ogImageUrl: string | undefined;
 
@@ -110,56 +115,87 @@ const ogImage = ogImageUrl
 
   <main
     id="main-content"
-    class:list={["app-layout", { "mt-8": !config.features.showBackButton }]}
+    class:list={[
+      "app-layout",
+      { "mt-8": !config.features.showBackButton },
+      { "xl:max-w-[1140px]": headings.length > 0 },
+    ]}
     data-pagefind-body
   >
-    <h1
-      style={{ viewTransitionName: toTransitionName(post.id) }}
-      class="text-accent inline-block text-2xl font-bold sm:text-3xl"
-    >
-      {title}
-    </h1>
-
-    <div class="my-2 flex items-center gap-2">
-      <Datetime {pubDatetime} {modDatetime} {timezone} size="lg" />
-      <span
-        aria-hidden="true"
-        class:list={[
-          "text-muted-foreground max-sm:hidden",
-          { hidden: !config.features.editPost?.enabled || hideEditPost },
-        ]}
-      >
-        |
-      </span>
-      <EditPost {hideEditPost} {post} class="max-sm:hidden" />
-    </div>
-
-    <article
-      id="article"
+    <div
       class:list={[
-        "mt-8 w-full",
-        "app-prose max-w-app",
-        "prose-pre:bg-(--shiki-light-bg) dark:prose-pre:bg-(--shiki-dark-bg)",
+        {
+          "xl:grid xl:grid-cols-[1fr_250px] xl:items-start xl:gap-12":
+            headings.length > 0,
+        },
       ]}
     >
-      <Content />
-    </article>
+      <div class="max-w-app min-w-0">
+        <h1
+          style={{ viewTransitionName: toTransitionName(post.id) }}
+          class="text-accent inline-block text-2xl font-bold sm:text-3xl"
+        >
+          {title}
+        </h1>
 
-    <hr class="my-8 border-dashed" />
+        <div class="my-2 flex items-center gap-2">
+          <Datetime {pubDatetime} {modDatetime} {timezone} size="lg" />
+          <span
+            aria-hidden="true"
+            class:list={[
+              "text-muted-foreground max-sm:hidden",
+              { hidden: !config.features.editPost?.enabled || hideEditPost },
+            ]}
+          >
+            |
+          </span>
+          <EditPost {hideEditPost} {post} class="max-sm:hidden" />
+        </div>
 
-    <EditPost class="sm:hidden" {hideEditPost} {post} />
+        {post.data.series && <SeriesCard currentPost={post} {allPosts} />}
 
-    <BackToTopButton />
+        <article
+          id="article"
+          class:list={[
+            "mt-8 w-full",
+            "app-prose max-w-app",
+            "prose-pre:bg-(--shiki-light-bg) dark:prose-pre:bg-(--shiki-dark-bg)",
+          ]}
+        >
+          <Content />
+        </article>
 
-    <ul class="mt-4 mb-8 flex flex-wrap gap-4 sm:my-8">
-      {tags.map(tag => <Tag tag={slugifyStr(tag)} tagName={tag} size="sm" />)}
-    </ul>
+        <hr class="my-8 border-dashed" />
 
-    <ShareLinks />
+        <EditPost class="sm:hidden" {hideEditPost} {post} />
 
-    <hr class="my-8 border-dashed" />
+        <BackToTopButton />
 
-    <AdjacentPostNav {prevPost} {nextPost} />
+        <ul class="mt-4 mb-8 flex flex-wrap gap-4 sm:my-8">
+          {
+            tags.map(tag => (
+              <Tag tag={slugifyStr(tag)} tagName={tag} size="sm" />
+            ))
+          }
+        </ul>
+
+        <ShareLinks />
+
+        <hr class="my-8 border-dashed" />
+
+        <AdjacentPostNav {prevPost} {nextPost} />
+
+        <Comments />
+      </div>
+
+      {
+        headings.length > 0 && (
+          <aside class="hidden xl:block">
+            <TableOfContents {headings} />
+          </aside>
+        )
+      }
+    </div>
   </main>
   <Footer />
 </PostLayout>
@@ -225,22 +261,28 @@ const ogImage = ogImageUrl
       const wrapper = document.createElement("div");
       wrapper.style.position = "relative";
 
-      const computedStyle = getComputedStyle(codeBlock);
-      const hasFileNameOffset =
-        computedStyle.getPropertyValue("--file-name-offset").trim() !== "";
-
-      const topClass = hasFileNameOffset
-        ? "top-(--file-name-offset)"
-        : "-top-3";
+      // Check if code block has a filename header
+      const prevElement = codeBlock.previousElementSibling;
+      const hasFileName =
+        prevElement && prevElement.classList.contains("shiki-file-name");
 
       const copyButton = document.createElement("button");
-      copyButton.className = `copy-code absolute end-3 ${topClass} rounded bg-muted border border-muted px-2 py-1 text-xs leading-4 text-foreground font-medium`;
+      copyButton.className =
+        "copy-code absolute right-3 -top-3 rounded bg-muted px-2 py-1 text-xs leading-4 text-foreground font-medium";
       copyButton.innerHTML = copyButtonLabel;
       codeBlock.setAttribute("tabindex", "0");
       codeBlock.appendChild(copyButton);
 
+      // wrap codeblock with relative parent element
       codeBlock?.parentNode?.insertBefore(wrapper, codeBlock);
       wrapper.appendChild(codeBlock);
+
+      // Adjust copy button position based on filename header
+      if (hasFileName) {
+        copyButton.classList.add("top-2.5");
+      } else {
+        copyButton.classList.add("-top-3");
+      }
 
       copyButton.addEventListener("click", async () => {
         await copyCode(codeBlock, copyButton);
@@ -251,8 +293,9 @@ const ogImage = ogImageUrl
       const code = block.querySelector("code");
       const text = code?.innerText;
 
-      await navigator.clipboard.writeText(text ?? "");
+      await navigator.clipboard.writeText(text);
 
+      // visual feedback that task is completed
       button.innerText = "Copied";
 
       setTimeout(() => {
@@ -262,273 +305,94 @@ const ogImage = ogImageUrl
   }
   attachCopyButtons();
 
-  /** Accessible image lightbox for article images. */
   function initLightbox() {
-    const article = document.getElementById("article");
-    if (!article) return;
+    const images = Array.from(
+      document.querySelectorAll("#article img:not(.zoom-ignore)")
+    );
+    if (!images.length) return;
 
-    const prefersReducedMotion = () =>
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let modal = document.getElementById("lightbox-modal");
+    if (!modal) {
+      modal = document.createElement("div");
+      modal.id = "lightbox-modal";
+      modal.setAttribute("role", "dialog");
+      modal.setAttribute("aria-modal", "true");
+      modal.setAttribute("aria-label", "Image Preview");
+      modal.tabIndex = -1;
+      modal.className =
+        "fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-xs opacity-0 pointer-events-none transition-opacity duration-300";
 
-    let overlay = null;
-    let lastFocused = null;
+      const img = document.createElement("img");
+      img.id = "lightbox-image";
+      img.className =
+        "max-h-[90vh] max-w-[90vw] object-contain transition-transform duration-200 select-none cursor-grab active:cursor-grabbing";
+      img.alt = "";
 
-    // Defer attribute mutations so they don't push the LCP timestamp.
-    // Event listeners below use delegation and don't need the attributes to exist yet.
-    requestAnimationFrame(() => {
-      const images = Array.from(article.querySelectorAll("img"));
-      for (const image of images) {
-        if (image.closest("a")) continue;
-        image.setAttribute("role", "button");
-        image.setAttribute("tabindex", "0");
-        image.setAttribute("aria-haspopup", "dialog");
-        image.setAttribute(
-          "aria-label",
-          image.alt ? `Zoom image: ${image.alt}` : "Zoom image"
-        );
-      }
-    });
+      const btn = document.createElement("button");
+      btn.setAttribute("aria-label", "Close lightbox");
+      btn.className =
+        "absolute top-4 right-4 z-10 text-white/80 hover:text-white bg-black/40 hover:bg-black/60 rounded-full w-10 h-10 flex items-center justify-center text-xl transition-colors";
+      btn.innerHTML = "&times;";
 
-    function open(src, alt, trigger) {
-      if (overlay) return;
-      lastFocused = trigger ?? document.activeElement;
+      modal.appendChild(btn);
+      modal.appendChild(img);
+      document.body.appendChild(modal);
+    }
 
-      overlay = document.createElement("div");
-      overlay.setAttribute("role", "dialog");
-      overlay.setAttribute("aria-modal", "true");
-      overlay.setAttribute(
-        "aria-label",
-        alt ? `Image preview: ${alt}` : "Image preview"
-      );
-      overlay.className =
-        "fixed inset-0 z-50 flex cursor-zoom-out items-center justify-center bg-black/70 backdrop-blur-sm opacity-0 transition-opacity duration-200 motion-reduce:transition-none";
+    const lightboxImg = modal.querySelector("#lightbox-image");
+    const closeBtn = modal.querySelector("button");
+    let activeElementBeforeOpen = null;
+    let currentScale = 1;
+    let translateX = 0;
+    let translateY = 0;
 
-      const closeButton = document.createElement("button");
-      closeButton.type = "button";
-      closeButton.setAttribute("aria-label", "Close image preview");
-      closeButton.className =
-        "absolute end-4 top-4 rounded p-2 text-3xl leading-none text-white";
-      closeButton.innerHTML = "&#10005;";
-      closeButton.addEventListener("click", close);
+    function applyTransform() {
+      lightboxImg.style.transform = `translate3d(${translateX}px, ${translateY}px, 0) scale(${currentScale})`;
+    }
 
-      const image = document.createElement("img");
-      image.src = src;
-      image.alt = "";
-      image.className =
-        "max-h-[90dvh] max-w-[90dvw] cursor-default object-contain";
+    function resetZoom() {
+      currentScale = 1;
+      translateX = 0;
+      translateY = 0;
+      applyTransform();
+    }
 
-      overlay.append(closeButton, image);
-      overlay.addEventListener("click", e => {
-        if (e.target === overlay && currentScale <= 1) close();
-      });
-
-      let currentScale = 1;
-      let translateX = 0;
-      let translateY = 0;
-      let initialDist = 0;
-      let initialScale = 1;
-      let panStartX = 0;
-      let panStartY = 0;
-      let panStartTranslateX = 0;
-      let panStartTranslateY = 0;
-      let lastTapTime = 0;
-
-      function applyTransform() {
-        image.style.transform = `scale(${currentScale}) translate(${translateX}px, ${translateY}px)`;
-      }
-
-      function resetTransform() {
-        currentScale = 1;
-        translateX = 0;
-        translateY = 0;
-        image.style.transform = "";
-      }
-
-      overlay.addEventListener(
-        "touchstart",
-        e => {
-          const t = e.touches;
-          if (t.length === 2) {
-            initialDist = Math.hypot(
-              t[1].clientX - t[0].clientX,
-              t[1].clientY - t[0].clientY
-            );
-            initialScale = currentScale;
-          } else if (t.length === 1) {
-            const now = Date.now();
-            if (now - lastTapTime < 300) {
-              e.preventDefault();
-              if (currentScale > 1) {
-                resetTransform();
-              } else {
-                currentScale = 2;
-                translateX = 0;
-                translateY = 0;
-                applyTransform();
-              }
-              lastTapTime = 0;
-              panStartX = t[0].clientX;
-              panStartY = t[0].clientY;
-              panStartTranslateX = translateX;
-              panStartTranslateY = translateY;
-            } else {
-              lastTapTime = now;
-              if (currentScale > 1) {
-                panStartX = t[0].clientX;
-                panStartY = t[0].clientY;
-                panStartTranslateX = translateX;
-                panStartTranslateY = translateY;
-              }
-            }
-          }
-        },
-        { passive: false }
-      );
-
-      overlay.addEventListener(
-        "touchmove",
-        e => {
-          const t = e.touches;
-          if (t.length === 2) {
-            e.preventDefault();
-            const dist = Math.hypot(
-              t[1].clientX - t[0].clientX,
-              t[1].clientY - t[0].clientY
-            );
-            currentScale = Math.min(
-              4,
-              Math.max(1, initialScale * (dist / initialDist))
-            );
-            applyTransform();
-          } else if (t.length === 1) {
-            if (currentScale > 1) {
-              e.preventDefault();
-              translateX =
-                panStartTranslateX + (t[0].clientX - panStartX) / currentScale;
-              translateY =
-                panStartTranslateY + (t[0].clientY - panStartY) / currentScale;
-              const maxX = Math.max(
-                0,
-                (image.clientWidth - overlay.clientWidth / currentScale) / 2
-              );
-              const maxY = Math.max(
-                0,
-                (image.clientHeight - overlay.clientHeight / currentScale) / 2
-              );
-              translateX = Math.min(maxX, Math.max(-maxX, translateX));
-              translateY = Math.min(maxY, Math.max(-maxY, translateY));
-              applyTransform();
-            } else {
-              e.preventDefault();
-            }
-          }
-        },
-        { passive: false }
-      );
-
-      overlay.addEventListener("touchend", e => {
-        if (e.touches.length === 0 && currentScale <= 1.05) {
-          resetTransform();
-        }
-      });
-
-      overlay.addEventListener("touchcancel", e => {
-        if (e.touches.length === 0 && currentScale <= 1.05) {
-          resetTransform();
-        }
-      });
-
-      document.body.appendChild(overlay);
+    function openLightbox(src, alt) {
+      activeElementBeforeOpen = document.activeElement;
+      lightboxImg.src = src;
+      lightboxImg.alt = alt || "";
+      resetZoom();
+      modal.classList.remove("opacity-0", "pointer-events-none");
+      modal.classList.add("opacity-100");
+      modal.focus();
       document.body.style.overflow = "hidden";
-      document.addEventListener("keydown", onKeyDown);
-      window.__closeLightbox = close;
-
-      requestAnimationFrame(() => overlay?.classList.add("opacity-100"));
-      closeButton.focus();
     }
 
-    function close() {
-      if (!overlay) return;
-      const el = overlay;
-      overlay = null;
-      window.__closeLightbox = null;
-
-      document.removeEventListener("keydown", onKeyDown);
+    function closeLightbox() {
+      modal.classList.remove("opacity-100");
+      modal.classList.add("opacity-0", "pointer-events-none");
       document.body.style.overflow = "";
-      lastFocused?.focus();
-      lastFocused = null;
-
-      if (prefersReducedMotion()) {
-        el.remove();
-        return;
-      }
-      const remove = () => el.remove();
-      el.addEventListener("transitionend", remove, { once: true });
-      setTimeout(remove, 250); // fallback in case transitionend never fires
-      el.classList.remove("opacity-100");
-    }
-
-    function onKeyDown(e) {
-      if (e.key === "Escape") {
-        close();
-      } else if (e.key === "Tab") {
-        trapFocus(e);
+      resetZoom();
+      if (activeElementBeforeOpen) {
+        activeElementBeforeOpen.focus();
       }
     }
 
-    // Keep keyboard focus inside the open dialog.
-    function trapFocus(e) {
-      if (!overlay) return;
-      const focusables = overlay.querySelectorAll(
-        'a[href], button, [tabindex]:not([tabindex="-1"])'
-      );
-      if (focusables.length === 0) return;
-      const first = focusables[0];
-      const last = focusables[focusables.length - 1];
-      if (e.shiftKey && document.activeElement === first) {
-        e.preventDefault();
-        last.focus();
-      } else if (!e.shiftKey && document.activeElement === last) {
-        e.preventDefault();
-        first.focus();
-      }
-    }
-
-    function triggerFromEvent(e) {
-      const image = e.target.closest("img");
-      if (!image || !article.contains(image) || image.closest("a")) return null;
-      return image;
-    }
-
-    function activate(image) {
-      open(image.currentSrc || image.src, image.alt, image);
-    }
-
-    article.addEventListener("click", e => {
-      const image = triggerFromEvent(e);
-      if (!image) return;
-      e.preventDefault();
-      activate(image);
+    images.forEach(img => {
+      img.style.cursor = "zoom-in";
+      img.addEventListener("click", () => {
+        openLightbox(img.src, img.alt);
+      });
     });
 
-    article.addEventListener("keydown", e => {
-      if (e.key !== "Enter" && e.key !== " " && e.key !== "Spacebar") return;
-      const image = triggerFromEvent(e);
-      if (!image) return;
-      e.preventDefault();
-      activate(image);
+    closeBtn.addEventListener("click", closeLightbox);
+    modal.addEventListener("click", e => {
+      if (e.target === modal) closeLightbox();
+    });
+
+    modal.addEventListener("keydown", e => {
+      if (e.key === "Escape") closeLightbox();
     });
   }
   initLightbox();
-
-  if (!window.__lightboxSwapBound) {
-    window.__lightboxSwapBound = true;
-    document.addEventListener("astro:before-swap", () =>
-      window.__closeLightbox?.()
-    );
-  }
-
-  document.addEventListener("astro:after-swap", () =>
-    window.scrollTo({ left: 0, top: 0, behavior: "instant" })
-  );
 </script>

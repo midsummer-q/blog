@@ -21,6 +21,15 @@ const posts = defineCollection({
       canonicalURL: z.string().optional(),
       hideEditPost: z.boolean().optional(),
       timezone: z.string().optional(),
+      series: z
+        .union([
+          z.string(),
+          z.object({
+            name: z.string(),
+            order: z.number().default(1),
+          }),
+        ])
+        .optional(),
     }),
 });
 

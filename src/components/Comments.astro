@@ -1,0 +1,150 @@
+---
+import config from "@/config";
+
+const giscus = config.features.giscus;
+const isEnabled = Boolean(giscus?.enabled && giscus?.repo && giscus?.repoId);
+
+const {
+  repo = "",
+  repoId = "",
+  category = "General",
+  categoryId = "",
+  mapping = "pathname",
+  strict = "0",
+  reactionsEnabled = "1",
+  emitMetadata = "0",
+  inputPosition = "bottom",
+  lang = "zh-CN",
+  lightTheme = "light",
+  darkTheme = "transparent_dark",
+} = giscus ?? {};
+---
+
+{
+  isEnabled && (
+    <section
+      id="comments-section"
+      class="mt-12 w-full border-t border-dashed pt-8"
+    >
+      <h2 class="text-foreground/80 mb-6 flex items-center gap-2 text-xl font-bold">
+        <span>💬</span>
+        <span>评论交流</span>
+      </h2>
+      <div
+        id="giscus-container"
+        class="giscus min-h-[180px] w-full"
+        data-repo={repo}
+        data-repo-id={repoId}
+        data-category={category}
+        data-category-id={categoryId}
+        data-mapping={mapping}
+        data-strict={strict ? "1" : "0"}
+        data-reactions-enabled={reactionsEnabled ? "1" : "0"}
+        data-emit-metadata={emitMetadata ? "1" : "0"}
+        data-input-position={inputPosition}
+        data-lang={lang}
+        data-light-theme={lightTheme}
+        data-dark-theme={darkTheme}
+      />
+    </section>
+  )
+}
+
+<script is:inline>
+  function getGiscusTheme(container) {
+    const darkTheme =
+      container.getAttribute("data-dark-theme") || "transparent_dark";
+    const lightTheme = container.getAttribute("data-light-theme") || "light";
+    const isDark =
+      document.documentElement.getAttribute("data-theme") === "dark" ||
+      document.documentElement.classList.contains("dark");
+    return isDark ? darkTheme : lightTheme;
+  }
+
+  function updateGiscusTheme() {
+    const container = document.getElementById("giscus-container");
+    if (!container) return;
+    const iframe = document.querySelector("iframe.giscus-frame");
+    if (iframe && iframe.contentWindow) {
+      iframe.contentWindow.postMessage(
+        { giscus: { setConfig: { theme: getGiscusTheme(container) } } },
+        "https://giscus.app"
+      );
+    }
+  }
+
+  function loadGiscus() {
+    const container = document.getElementById("giscus-container");
+    if (!container) return;
+
+    container.innerHTML = "";
+
+    const script = document.createElement("script");
+    script.src = "https://giscus.app/client.js";
+    script.setAttribute("data-repo", container.getAttribute("data-repo") || "");
+    script.setAttribute(
+      "data-repo-id",
+      container.getAttribute("data-repo-id") || ""
+    );
+    script.setAttribute(
+      "data-category",
+      container.getAttribute("data-category") || ""
+    );
+    script.setAttribute(
+      "data-category-id",
+      container.getAttribute("data-category-id") || ""
+    );
+    script.setAttribute(
+      "data-mapping",
+      container.getAttribute("data-mapping") || "pathname"
+    );
+    script.setAttribute(
+      "data-strict",
+      container.getAttribute("data-strict") || "0"
+    );
+    script.setAttribute(
+      "data-reactions-enabled",
+      container.getAttribute("data-reactions-enabled") || "1"
+    );
+    script.setAttribute(
+      "data-emit-metadata",
+      container.getAttribute("data-emit-metadata") || "0"
+    );
+    script.setAttribute(
+      "data-input-position",
+      container.getAttribute("data-input-position") || "bottom"
+    );
+    script.setAttribute("data-theme", getGiscusTheme(container));
+    script.setAttribute(
+      "data-lang",
+      container.getAttribute("data-lang") || "zh-CN"
+    );
+    script.setAttribute("crossorigin", "anonymous");
+    script.async = true;
+
+    container.appendChild(script);
+  }
+
+  if (!window.__giscusObserverRegistered) {
+    window.__giscusObserverRegistered = true;
+    const observer = new MutationObserver(mutations => {
+      for (const mutation of mutations) {
+        if (
+          mutation.type === "attributes" &&
+          (mutation.attributeName === "data-theme" ||
+            mutation.attributeName === "class")
+        ) {
+          updateGiscusTheme();
+          break;
+        }
+      }
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme", "class"],
+    });
+  }
+
+  document.addEventListener("astro:page-load", loadGiscus);
+</script>

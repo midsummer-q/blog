@@ -5,6 +5,7 @@ import { getRelativeLocaleUrl } from "astro:i18n";
 import { resolveDefaultOgImagePath } from "@/utils/resolveDefaultOgImagePath";
 import { getAssetPath } from "@/utils/withBase";
 import config from "@/config";
+import Analytics from "@/components/Analytics.astro";
 import "@/styles/global.css";
 
 type Props = {
@@ -103,6 +104,9 @@ const rssHref = getRelativeLocaleUrl(
         />
       )
     }
+
+    <!-- Analytics -->
+    <Analytics />
 
     <!--
       Inline FOUC-prevention script: sets data-theme on <html> before

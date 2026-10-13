@@ -33,7 +33,9 @@ const config: ResolvedAstroPaperConfig = {
     showBackButton: userConfig.features?.showBackButton ?? true,
     editPost: userConfig.features?.editPost ?? { enabled: false },
     search: userConfig.features?.search ?? "pagefind",
+    giscus: userConfig.features?.giscus,
   },
+  analytics: userConfig.analytics,
   socials: userConfig.socials ?? [],
   shareLinks: userConfig.shareLinks ?? [],
 };

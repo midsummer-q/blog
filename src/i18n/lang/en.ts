@@ -9,6 +9,7 @@ export default {
     archives: "Archives",
     search: "Search",
     lab: "Lab",
+    series: "Series",
   },
   post: {
     publishedAt: "Published at",

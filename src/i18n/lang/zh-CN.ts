@@ -9,6 +9,7 @@ export default {
     archives: "归档",
     search: "搜索",
     lab: "实验室",
+    series: "专栏",
   },
   post: {
     publishedAt: "发布于",

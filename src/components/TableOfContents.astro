@@ -1,0 +1,167 @@
+---
+import type { MarkdownHeading } from "astro";
+
+interface Props {
+  headings: MarkdownHeading[];
+  class?: string;
+}
+
+const { headings, class: className = "" } = Astro.props;
+
+// 仅保留二级和三级标题
+const toc = headings.filter(h => h.depth === 2 || h.depth === 3);
+---
+
+{
+  toc.length > 0 && (
+    <nav
+      class:list={[
+        "toc-nav sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto",
+        "rounded-lg p-4 text-sm select-none",
+        "border-border/40 bg-background/50 border backdrop-blur-xs",
+        className,
+      ]}
+      aria-label="Table of contents"
+    >
+      <div class="text-accent mb-3 flex items-center gap-1.5 text-xs font-semibold tracking-wider uppercase">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-4 w-4"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <line x1="8" y1="6" x2="21" y2="6" />
+          <line x1="8" y1="12" x2="21" y2="12" />
+          <line x1="8" y1="18" x2="21" y2="18" />
+          <line x1="3" y1="6" x2="3.01" y2="6" />
+          <line x1="3" y1="12" x2="3.01" y2="12" />
+          <line x1="3" y1="18" x2="3.01" y2="18" />
+        </svg>
+        <span>目录</span>
+      </div>
+
+      <ul class="space-y-1 text-xs">
+        {toc.map(heading => {
+          const isH3 = heading.depth === 3;
+          return (
+            <li>
+              <a
+                href={`#${heading.slug}`}
+                data-slug={heading.slug}
+                class:list={[
+                  "toc-link block py-1 transition-all duration-150",
+                  "hover:border-accent/60 border-l-2 border-transparent",
+                  "text-foreground/70 hover:text-accent",
+                  isH3 ? "pl-5 text-[11px]" : "pl-2.5 font-medium",
+                ]}
+              >
+                <span class="line-clamp-1">{heading.text}</span>
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+    </nav>
+  )
+}
+
+<style>
+  /* 激活状态样式 */
+  :global(.toc-link.active) {
+    color: var(--color-accent, #3b5a75) !important;
+    font-weight: 600 !important;
+    border-left-color: var(--color-accent, #3b5a75) !important;
+  }
+</style>
+
+<script is:inline>
+  function setupTocScrollSpy() {
+    const tocLinks = document.querySelectorAll(".toc-link");
+    if (!tocLinks.length) return;
+
+    const headingElements = [];
+    tocLinks.forEach(link => {
+      const slug = link.getAttribute("data-slug");
+      if (slug) {
+        const target = document.getElementById(slug);
+        if (target) {
+          headingElements.push({ link, target });
+        }
+      }
+    });
+
+    if (!headingElements.length) return;
+
+    let activeLink = null;
+
+    function updateActiveHeading() {
+      const scrollPosition = window.scrollY + 120; // 偏移量匹配顶部高度
+
+      let current = null;
+      for (const item of headingElements) {
+        const top = item.target.offsetTop;
+        if (top <= scrollPosition) {
+          current = item.link;
+        } else {
+          break;
+        }
+      }
+
+      if (!current && headingElements.length > 0) {
+        current = headingElements[0].link;
+      }
+
+      if (current !== activeLink) {
+        if (activeLink) {
+          activeLink.classList.remove("active");
+        }
+        if (current) {
+          current.classList.add("active");
+          // 确保当前激活目录项在可见视口中
+          current.scrollIntoView({ block: "nearest", behavior: "smooth" });
+        }
+        activeLink = current;
+      }
+    }
+
+    // 节流滚动事件
+    let ticking = false;
+    function onScroll() {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          updateActiveHeading();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    updateActiveHeading();
+
+    // 点击平滑滚动并立即更新状态
+    tocLinks.forEach(link => {
+      link.addEventListener("click", e => {
+        const slug = link.getAttribute("data-slug");
+        if (slug) {
+          const target = document.getElementById(slug);
+          if (target) {
+            e.preventDefault();
+            target.scrollIntoView({ behavior: "smooth", block: "start" });
+            history.pushState(null, "", `#${slug}`);
+            if (activeLink) activeLink.classList.remove("active");
+            link.classList.add("active");
+            activeLink = link;
+          }
+        }
+      });
+    });
+  }
+
+  // 配合 Astro View Transitions
+  document.addEventListener("astro:page-load", setupTocScrollSpy);
+</script>

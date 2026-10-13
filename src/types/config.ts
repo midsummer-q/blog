@@ -59,6 +59,41 @@ interface FeaturesConfig {
    * Set to false to disable search entirely.
    */
   search?: "pagefind" | false;
+  /**
+   * Giscus comments configuration based on GitHub Discussions.
+   */
+  giscus?: GiscusConfig;
+}
+
+export interface GiscusConfig {
+  enabled: boolean;
+  repo: string;
+  repoId: string;
+  category: string;
+  categoryId: string;
+  mapping?: "pathname" | "url" | "title" | "og:title" | "specific" | "number";
+  strict?: boolean;
+  reactionsEnabled?: boolean;
+  emitMetadata?: boolean;
+  inputPosition?: "top" | "bottom";
+  lang?: string;
+  lightTheme?: string;
+  darkTheme?: string;
+}
+
+export interface AnalyticsConfig {
+  /** Umami analytics */
+  umami?: {
+    websiteId: string;
+    /** Script URL, defaults to "https://cloud.umami.is/script.js" */
+    scriptUrl?: string;
+    /** Domains to track */
+    domains?: string;
+  };
+  /** Google Analytics measurement ID (e.g. "G-XXXXXXXXXX") */
+  googleAnalytics?: {
+    id: string;
+  };
 }
 
 interface SocialLink {
@@ -96,6 +131,8 @@ interface AstroPaperConfig {
   site: SiteConfig;
   posts?: PostsConfig;
   features?: FeaturesConfig;
+  /** Analytics configuration (Umami, Google Analytics) */
+  analytics?: AnalyticsConfig;
   /** Social profile links shown in header/footer */
   socials?: SocialLink[];
   /** Share links shown on post detail pages */
@@ -120,7 +157,10 @@ type ResolvedSiteConfig = Required<
 export interface ResolvedAstroPaperConfig {
   site: ResolvedSiteConfig;
   posts: Required<PostsConfig>;
-  features: Required<FeaturesConfig>;
+  features: Required<Omit<FeaturesConfig, "giscus">> & {
+    giscus?: GiscusConfig;
+  };
+  analytics?: AnalyticsConfig;
   socials: SocialLink[];
   shareLinks: ShareLink[];
 }
