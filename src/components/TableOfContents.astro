@@ -103,7 +103,7 @@ const toc = headings.filter(h => h.depth === 2 || h.depth === 3);
 
       let current = null;
       for (const item of headingElements) {
-        const top = item.target.offsetTop;
+        const top = item.target.getBoundingClientRect().top + window.scrollY;
         if (top <= scrollPosition) {
           current = item.link;
         } else {
@@ -121,8 +121,6 @@ const toc = headings.filter(h => h.depth === 2 || h.depth === 3);
         }
         if (current) {
           current.classList.add("active");
-          // 确保当前激活目录项在可见视口中
-          current.scrollIntoView({ block: "nearest", behavior: "smooth" });
         }
         activeLink = current;
       }
