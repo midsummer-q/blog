@@ -135,4 +135,4 @@ random.randint(1, 6) # 这里居然是包含 6 的！
 ## 参考与来源
 
 * **知乎原回答**：[Python 中的 range 函数为什么要设计成“左闭右开”的样子，这是有啥用意吗？ - AI解码师的回答 - 知乎](https://www.zhihu.com/question/2017158298030321813/answer/2017979521509367875)
-* **手稿出处**：Edsger W. Dijkstra, *Why numbering should start at zero* (EWD 831, 1982)
+* **手稿出处**：[Edsger W. Dijkstra, *Why numbering should start at zero* (EWD 831, 1982)](https://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD831.html)
