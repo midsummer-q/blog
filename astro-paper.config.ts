@@ -28,13 +28,12 @@ export default defineAstroPaperConfig({
     },
     search: "pagefind",
     // Giscus 评论系统（基于 GitHub Discussions）
-    // 前往 https://giscus.app 获取 repoId 与 categoryId 填入后将 enabled 设为 true 即可启用
     giscus: {
-      enabled: false,
+      enabled: true,
       repo: "midsummer-q/blog",
-      repoId: "", // 例如 "R_kgDO..."
-      category: "General",
-      categoryId: "", // 例如 "DIC_kwDO..."
+      repoId: "R_kgDOVE4_Yw",
+      category: "Announcements",
+      categoryId: "DIC_kwDOVE4_Y84DIT_a",
       mapping: "pathname",
       reactionsEnabled: true,
       lang: "zh-CN",
