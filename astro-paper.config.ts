@@ -43,11 +43,10 @@ export default defineAstroPaperConfig({
   },
   // 访问统计分析配置（支持 Umami 与 Google Analytics）
   analytics: {
-    // Umami（自建或云端实例，推荐）
-    // umami: {
-    //   websiteId: "your-umami-website-id",
-    //   scriptUrl: "https://cloud.umami.is/script.js",
-    // },
+    // Umami 云端实例统计
+    umami: {
+      websiteId: "c2970c20-9da9-4477-a424-af19e5f5d402",
+    },
     // Google Analytics
     // googleAnalytics: {
     //   id: "G-XXXXXXXXXX",
