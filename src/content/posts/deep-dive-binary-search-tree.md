@@ -55,6 +55,41 @@ description: 为什么看似完美的二叉分治，在动态场景下会沦为�
 > [!NOTE]
 > **投影原理**：如果我们对一棵 BST 执行**中序遍历（In-order Traversal：左 $\to$ 根 $\to$ 右）**，遍历所产出的序列必然是**全局严格升序单调排列**的。这也是许多系统利用 BST 实现字典有序范围查询（Range Query）的核心基础。
 
+在 C++ 中，一个标准的 BST 节点与基础查找、插入操作实现如下：
+
+```cpp
+#include <iostream>
+
+struct BSTNode {
+    int key;
+    BSTNode* left = nullptr;
+    BSTNode* right = nullptr;
+
+    explicit BSTNode(int val) : key(val) {}
+};
+
+// 迭代查找：沿决策路径下行，时间复杂度取决于树高 O(h)
+BSTNode* search(BSTNode* root, int key) {
+    while (root && root->key != key) {
+        root = (key < root->key) ? root->left : root->right;
+    }
+    return root;
+}
+
+// 递归插入：若键值已存在则不重复插入
+BSTNode* insert(BSTNode* root, int key) {
+    if (!root) {
+        return new BSTNode(key);
+    }
+    if (key < root->key) {
+        root->left = insert(root->left, key);
+    } else if (key > root->key) {
+        root->right = insert(root->right, key);
+    }
+    return root;
+}
+```
+
 ### 2. 前驱与后继：拓扑空间中的“紧邻”定位
 
 在 BST 的拓扑世界中，定位某个键值在全序关系中的紧邻元素（即前驱 Predecessor 与后继 Successor）极其优雅：
@@ -65,6 +100,37 @@ description: 为什么看似完美的二叉分治，在动态场景下会沦为�
 - **中序后继（Successor）**：大于当前节点的最小键值。
   - 若右子树存在，则是**右子树中的最左叶子节点**；
   - 若右子树不存在，则是**向上回溯找到的第一个将当前节点置于其左分支的祖先节点**。
+
+对应定位中序后继的 C++ 实现如下：
+
+```cpp
+// 在无父指针的 BST 中定位节点 target 的中序后继
+BSTNode* findSuccessor(BSTNode* root, BSTNode* target) {
+    if (!target) return nullptr;
+
+    // 情况 1：右子树存在，后继必为右子树的最左节点
+    if (target->right) {
+        BSTNode* curr = target->right;
+        while (curr->left) {
+            curr = curr->left;
+        }
+        return curr;
+    }
+
+    // 情况 2：右子树不存在，从根向下搜索最近的左拐祖先
+    BSTNode* successor = nullptr;
+    BSTNode* ancestor = root;
+    while (ancestor != target) {
+        if (target->key < ancestor->key) {
+            successor = ancestor; // 记录最近一次向左拐入的祖先
+            ancestor = ancestor->left;
+        } else {
+            ancestor = ancestor->right;
+        }
+    }
+    return successor;
+}
+```
 
 前驱与后继不仅是区间扫描的核心指针跳步，更在后续的节点删除算法中扮演了生死攸关的替罪羊角色。
 
@@ -99,6 +165,54 @@ Hibbard 的解法非常精巧：
 - 找到 $X$ 的**中序后继 $S$**（即 $X$ 右子树中最小的节点）；
 - 将 $S$ 从右子树中摘除（注意：由于 $S$ 是右子树最小节点，**$S$ 绝对不可能有左孩子**，因此摘除 $S$ 最多只是度为 1 的简单情况！）；
 - 用 $S$ 的键值和数据覆盖原节点 $X$，或者直接把 $S$ 节点拼接置换到 $X$ 的拓扑位置。
+
+在 C++ 中，经典的 Hibbard 删除算法实现如下：
+
+```cpp
+// 寻找以 node 为根的子树中的最小节点（用于定位中序后继）
+BSTNode* findMin(BSTNode* node) {
+    while (node && node->left) {
+        node = node->left;
+    }
+    return node;
+}
+
+// 经典的 Hibbard 删除算法 C++ 实现（固定选择右子树的后继替补）
+BSTNode* hibbardDelete(BSTNode* root, int key) {
+    if (!root) return nullptr;
+
+    if (key < root->key) {
+        root->left = hibbardDelete(root->left, key);
+    } else if (key > root->key) {
+        root->right = hibbardDelete(root->right, key);
+    } else {
+        // 匹配到待删除目标节点 root
+        // 场景 1：无左孩子（涵盖叶子节点与仅有右分支节点）
+        if (!root->left) {
+            BSTNode* temp = root->right;
+            delete root;
+            return temp;
+        }
+        // 场景 2：无右孩子（仅有左分支节点）
+        if (!root->right) {
+            BSTNode* temp = root->left;
+            delete root;
+            return temp;
+        }
+
+        // 场景 3：双分支节点（左右子树均非空）
+        // Hibbard 惯性策略：永远固定寻找右子树的中序后继（最小节点）
+        BSTNode* successor = findMin(root->right);
+
+        // 用后继节点的键值覆盖当前节点
+        root->key = successor->key;
+
+        // 递归从右子树中剔除该后继节点
+        root->right = hibbardDelete(root->right, successor->key);
+    }
+    return root;
+}
+```
 
 数十年来，几乎所有的算法教科书（包括经典的 CLRS《算法导论》）都将 Hibbard 删除作为讲授 BST 的金科玉律。然而，一个潜伏极深的致命隐患正是在这里埋下的。
 

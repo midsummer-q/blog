@@ -82,6 +82,39 @@ $$BF(X) \in \{-1, 0, 1\}$$
 > [!NOTE]
 > 只要任何一个节点的左右子树高度差绝对值 $|BF| \ge 2$，该节点即被判定为**失衡节点**，系统必须立即施加拓扑旋转手术，强行将其修正回合法区间。
 
+在 C++ 中，AVL 树的节点结构定义与高度、平衡因子计算的辅助函数实现如下：
+
+```cpp
+#include <algorithm>
+#include <iostream>
+
+struct AVLNode {
+    int key;
+    int height = 1; // 节点高度，新创建的叶子节点初始高度为 1
+    AVLNode* left = nullptr;
+    AVLNode* right = nullptr;
+
+    explicit AVLNode(int val) : key(val) {}
+};
+
+// 安全获取节点高度（处理空指针 nullptr 高度为 0）
+int getHeight(AVLNode* node) {
+    return node ? node->height : 0;
+}
+
+// 计算平衡因子：BF = 左子树高度 - 右子树高度
+int getBalanceFactor(AVLNode* node) {
+    return node ? getHeight(node->left) - getHeight(node->right) : 0;
+}
+
+// 自底向上根据左右子树高度重算当前节点高度
+void updateHeight(AVLNode* node) {
+    if (node) {
+        node->height = 1 + std::max(getHeight(node->left), getHeight(node->right));
+    }
+}
+```
+
 ---
 
 ## 三、斐波那契极值树推导：最坏树高的优雅数学证明
@@ -193,6 +226,27 @@ $$h < \frac{1}{\log_2 \phi} \log_2(n + 2) \approx \frac{1}{0.69424} \log_2(n + 2
 - **操作**：以 $A$ 为支点顺时针右旋。让 $B$ 升为子树新根，$A$ 降为 $B$ 的右孩子，原 $B$ 的右子树 $2$ 顺延过继给 $A$ 作为左子树；
 - **结果**：旋转后 $A$ 和 $B$ 的平衡因子双双恢复为 $0$，整棵子树高度缩减 1。
 
+在 C++ 中，右单旋（Right Rotation）实现如下：
+
+```cpp
+// LL 型失衡：以失衡节点 y 为支点进行顺时针右单旋
+AVLNode* rotateRight(AVLNode* y) {
+    AVLNode* x = y->left;
+    AVLNode* T2 = x->right;
+
+    // 旋转拓扑重排：x 晋升为新根，y 降为右孩子，T2 过继给 y 作左孩子
+    x->right = y;
+    y->left = T2;
+
+    // 重新计算受影响节点的高度（先更新低层的 y，再更新高层的 x）
+    updateHeight(y);
+    updateHeight(x);
+
+    // 返回旋转后子树的全新根节点
+    return x;
+}
+```
+
 ### 2. RR 型失衡：左单旋（Left Rotation）
 
 **成因**：失衡节点 $A$（$BF = -2$）的**右孩子 $B$ 的右子树**过深（LL 型的完全镜像）。
@@ -206,6 +260,27 @@ $$h < \frac{1}{\log_2 \phi} \log_2(n + 2) \approx \frac{1}{0.69424} \log_2(n + 2
 ```
 
 - **操作**：以 $A$ 为支点逆时针左旋。让 $B$ 升为新根，$A$ 降为 $B$ 的左孩子，原 $B$ 的左子树 $2$ 过继给 $A$ 作为右子树。
+
+在 C++ 中，左单旋（Left Rotation）实现如下：
+
+```cpp
+// RR 型失衡：以失衡节点 x 为支点进行逆时针左单旋
+AVLNode* rotateLeft(AVLNode* x) {
+    AVLNode* y = x->right;
+    AVLNode* T2 = y->left;
+
+    // 旋转拓扑重排：y 晋升为新根，x 降为左孩子，T2 过继给 x 作右孩子
+    y->left = x;
+    x->right = T2;
+
+    // 重新计算受影响节点的高度（先更新低层的 x，再更新高层的 y）
+    updateHeight(x);
+    updateHeight(y);
+
+    // 返回旋转后子树的全新根节点
+    return y;
+}
+```
 
 ---
 
@@ -227,12 +302,113 @@ $$h < \frac{1}{\log_2 \phi} \log_2(n + 2) \approx \frac{1}{0.69424} \log_2(n + 2
 - **第 1 步**：以 $B$ 为支点做一次**左单旋**，把原本向右拐的折线 $B \to C$ 彻底拉直为同向直线 $C \to B$；
 - **第 2 步**：以 $A$ 为支点做一次**反向右单旋**，将中间节点 $C$ 彻底推举为整棵子树的全新根节点。
 
+在 C++ 中，左右双旋实现如下：
+
+```cpp
+// LR 型失衡：先左旋左孩子拉直折线，再右旋当前根节点
+AVLNode* rotateLeftRight(AVLNode* node) {
+    node->left = rotateLeft(node->left);
+    return rotateRight(node);
+}
+```
+
 ### 4. RL 型失衡：右左双旋（Right-Left Double Rotation）
 
 **成因**：失衡节点 $A$（$BF = -2$）的**右孩子 $B$ 的左子树 $C$** 过深（LR 型的完全镜像）。
 
 - **第 1 步**：先以右孩子 $B$ 为支点做**右单旋**，将折线拉直；
 - **第 2 步**：再以失衡节点 $A$ 为支点做**左单旋**，将 $C$ 推拔为新根。
+
+在 C++ 中，右左双旋实现如下：
+
+```cpp
+// RL 型失衡：先右旋右孩子拉直折线，再左旋当前根节点
+AVLNode* rotateRightLeft(AVLNode* node) {
+    node->right = rotateRight(node->right);
+    return rotateLeft(node);
+}
+```
+
+### 5. 统一调度：完整的自平衡插入与删除实现
+
+有了上述四种旋转手术刀，我们便可以在 C++ 中将它们统一装配到递归回溯路径中。注意观察在插入和删除后，算法如何通过检查平衡因子自动判定并命中对应的旋转分支：
+
+```cpp
+// 寻找以 node 为根的子树中的最小节点（用于删除时查找后继）
+AVLNode* findMin(AVLNode* node) {
+    while (node && node->left) node = node->left;
+    return node;
+}
+
+// 核心自平衡分发函数：根据平衡因子自动选择四种旋转之一
+AVLNode* rebalance(AVLNode* node) {
+    if (!node) return nullptr;
+
+    updateHeight(node);
+    int bf = getBalanceFactor(node);
+
+    // LL 型：左子树偏高且左孩子的左子树也偏高（或平）
+    if (bf > 1 && getBalanceFactor(node->left) >= 0) {
+        return rotateRight(node);
+    }
+    // LR 型：左子树偏高且左孩子的右子树偏高
+    if (bf > 1 && getBalanceFactor(node->left) < 0) {
+        return rotateLeftRight(node);
+    }
+    // RR 型：右子树偏高且右孩子的右子树也偏高（或平）
+    if (bf < -1 && getBalanceFactor(node->right) <= 0) {
+        return rotateLeft(node);
+    }
+    // RL 型：右子树偏高且右孩子的左子树偏高
+    if (bf < -1 && getBalanceFactor(node->right) > 0) {
+        return rotateRightLeft(node);
+    }
+
+    return node; // 处于 [-1, 1] 合法平衡区间，无需旋转
+}
+
+// 完整的 AVL 树插入（至多仅需 1 次旋转）
+AVLNode* insert(AVLNode* node, int key) {
+    if (!node) return new AVLNode(key);
+
+    if (key < node->key) {
+        node->left = insert(node->left, key);
+    } else if (key > node->key) {
+        node->right = insert(node->right, key);
+    } else {
+        return node; // 键值重复，不插入
+    }
+
+    // 回溯路径自动重平衡
+    return rebalance(node);
+}
+
+// 完整的 AVL 树删除（可能触发沿回溯路径的多级连锁旋转）
+AVLNode* remove(AVLNode* node, int key) {
+    if (!node) return nullptr;
+
+    if (key < node->key) {
+        node->left = remove(node->left, key);
+    } else if (key > node->key) {
+        node->right = remove(node->right, key);
+    } else {
+        // 找到待删除节点
+        if (!node->left || !node->right) {
+            AVLNode* temp = node->left ? node->left : node->right;
+            delete node;
+            return temp;
+        } else {
+            // 双孩子节点：用右子树中序后继替补自身
+            AVLNode* successor = findMin(node->right);
+            node->key = successor->key;
+            node->right = remove(node->right, successor->key);
+        }
+    }
+
+    // 回溯路径执行连锁平衡检查
+    return rebalance(node);
+}
+```
 
 ---
 

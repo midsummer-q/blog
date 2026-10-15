@@ -124,6 +124,28 @@ description: 告别死记硬背的红黑树规则。本文从 2-3-4 树与 2-3 �
 - 一个 **3-节点**：映射为“一黑一红”两个节点（红节点可以是左儿子，也可以是右儿子）；
 - 一个 **4-节点**：映射为“一黑带二红”的子树（中间元素升为黑根，左右两个元素分别作为红儿子挂在两侧）。
 
+在 C++ 中，一个典型的工业级红黑树节点结构定义如下（包含颜色枚举与用于自底向上回溯的父指针）：
+
+```cpp
+#include <iostream>
+#include <cstdint>
+
+enum class Color : uint8_t {
+    RED,
+    BLACK
+};
+
+struct RBNode {
+    int key;
+    Color color = Color::RED; // 新插入节点默认一律染成红色
+    RBNode* left = nullptr;
+    RBNode* right = nullptr;
+    RBNode* parent = nullptr; // 工业级通用实现中通常携带父指针
+
+    explicit RBNode(int val) : key(val) {}
+};
+```
+
 ---
 
 ## 三、学术界的极简革命：Robert Sedgewick 与 LLRB（左倾红黑树）
@@ -169,6 +191,61 @@ private Node put(Node h, Key key, Value val) {
 
     // 3. 如果左右均为红链接（4-节点满载），翻转颜色将其分裂并向上传导
     if (isRed(h.left) && isRed(h.right))       flipColors(h);
+
+    return h;
+}
+```
+
+转换到现代 C++ 中，这套极简自平衡机制的代码表达同样赏心悦目：
+
+```cpp
+struct LLRBNode {
+    int key;
+    bool isRed = true;
+    LLRBNode* left = nullptr;
+    LLRBNode* right = nullptr;
+
+    explicit LLRBNode(int val) : key(val) {}
+};
+
+inline bool isRed(LLRBNode* n) {
+    return n && n->isRed;
+}
+
+LLRBNode* rotateLeft(LLRBNode* h) {
+    LLRBNode* x = h->right;
+    h->right = x->left;
+    x->left = h;
+    x->isRed = h->isRed;
+    h->isRed = true;
+    return x;
+}
+
+LLRBNode* rotateRight(LLRBNode* h) {
+    LLRBNode* x = h->left;
+    h->left = x->right;
+    x->right = h;
+    x->isRed = h->isRed;
+    h->isRed = true;
+    return x;
+}
+
+void flipColors(LLRBNode* h) {
+    h->isRed = !h->isRed;
+    if (h->left) h->left->isRed = !h->left->isRed;
+    if (h->right) h->right->isRed = !h->right->isRed;
+}
+
+LLRBNode* insertLLRB(LLRBNode* h, int key) {
+    if (!h) return new LLRBNode(key);
+
+    if (key < h->key) h->left = insertLLRB(h->left, key);
+    else if (key > h->key) h->right = insertLLRB(h->right, key);
+
+    // 三步流水线修复平衡
+    if (isRed(h->right) && !isRed(h->left)) h = rotateLeft(h);
+    if (isRed(h->left) && isRed(h->left->left)) h = rotateRight(h);
+    if (isRed(h->left) && isRed(h->right)) flipColors(h);
 
     return h;
 }
@@ -255,6 +332,100 @@ X*(红)                            X*(红)
 ```
 
 旋转完毕后，子树的根节点变成了黑色（$P$），两侧挂着红色子节点，该子树的黑高完美维持，冲突彻底平息，**无需再向上回溯！**
+
+在 C++ 中，带父指针的标准工业级左旋、右旋以及统一的插入自平衡修复实现如下：
+
+```cpp
+// 工业级红黑树左旋实现（严格同步更新父指针）
+void rotateLeft(RBNode*& root, RBNode* x) {
+    RBNode* y = x->right;
+    x->right = y->left;
+    if (y->left) {
+        y->left->parent = x;
+    }
+
+    y->parent = x->parent;
+    if (!x->parent) {
+        root = y;
+    } else if (x == x->parent->left) {
+        x->parent->left = y;
+    } else {
+        x->parent->right = y;
+    }
+
+    y->left = x;
+    x->parent = y;
+}
+
+// 工业级红黑树右旋实现（严格同步更新父指针）
+void rotateRight(RBNode*& root, RBNode* y) {
+    RBNode* x = y->left;
+    y->left = x->right;
+    if (x->right) {
+        x->right->parent = y;
+    }
+
+    x->parent = y->parent;
+    if (!y->parent) {
+        root = x;
+    } else if (y == y->parent->left) {
+        y->parent->left = x;
+    } else {
+        y->parent->right = x;
+    }
+
+    x->right = y;
+    y->parent = x;
+}
+
+// 工业级红黑树插入自平衡修复（经典的 CLRS 三分支驱动法）
+void insertFixup(RBNode*& root, RBNode* z) {
+    // 只要父节点是红色，就说明出现了连续红节点违规，必须自平衡
+    while (z->parent && z->parent->color == Color::RED) {
+        if (z->parent == z->parent->parent->left) {
+            RBNode* uncle = z->parent->parent->right;
+
+            // 情况 1：叔叔节点为红（4-节点分裂，染色上提）
+            if (uncle && uncle->color == Color::RED) {
+                z->parent->color = Color::BLACK;
+                uncle->color = Color::BLACK;
+                z->parent->parent->color = Color::RED;
+                z = z->parent->parent; // 祖父变红，可能引起更上层冲突，向上回溯
+            } else {
+                // 情况 2：叔叔为黑，且当前节点是右孩子（折线型 LR）
+                if (z == z->parent->right) {
+                    z = z->parent;
+                    rotateLeft(root, z); // 局部单旋，拉直为同向直线型
+                }
+                // 情况 3：叔叔为黑，且当前节点是左孩子（直线型 LL）
+                z->parent->color = Color::BLACK;
+                z->parent->parent->color = Color::RED;
+                rotateRight(root, z->parent->parent); // 反向大旋转扶正，终结冲突！
+            }
+        } else {
+            // 对称镜像分支：父节点为祖父的右孩子
+            RBNode* uncle = z->parent->parent->left;
+
+            if (uncle && uncle->color == Color::RED) {
+                z->parent->color = Color::BLACK;
+                uncle->color = Color::BLACK;
+                z->parent->parent->color = Color::RED;
+                z = z->parent->parent;
+            } else {
+                if (z == z->parent->left) {
+                    z = z->parent;
+                    rotateRight(root, z);
+                }
+                z->parent->color = Color::BLACK;
+                z->parent->parent->color = Color::RED;
+                rotateLeft(root, z->parent->parent);
+            }
+        }
+    }
+    // 保证根节点永远为黑（铁律 2）
+    root->color = Color::BLACK;
+}
+```
 
 ### 3. 实现哲学分野：Bottom-up vs Top-down
 
@@ -350,6 +521,42 @@ struct rb_node {
 - 获取真实父节点指针：`(struct rb_node *)(__rb_parent_color & ~3)`。
 
 **通过这一精妙的位级压缩，每个红黑树节点直接省下了 8 字节的结构体 padding 空间**。在 Linux 庞大的内核空间中存在数以万计的 VMA 节点和调度任务，这项优化为 CPU L1/L2 Cache 节省了极其惊人的宝贵行缓存空间。
+
+用现代 C++ 语法对其进行面向对象封装，代码如下：
+
+```cpp
+// 现代 C++ 模拟 Linux 内核 include/linux/rbtree.h 指针偷位黑魔法
+class CompactRBNode {
+public:
+    uintptr_t __rb_parent_color = 0; // 最低位 bit 0 存颜色，高位存 8 字节对齐的父指针地址
+    CompactRBNode* rb_right = nullptr;
+    CompactRBNode* rb_left = nullptr;
+
+    // 清零最低位，还原真实的父节点内存地址
+    inline CompactRBNode* getParent() const {
+        return reinterpret_cast<CompactRBNode*>(__rb_parent_color & ~uintptr_t(3));
+    }
+
+    // 绑定父节点（严格保留当前节点的颜色位）
+    inline void setParent(CompactRBNode* p) {
+        __rb_parent_color = (__rb_parent_color & uintptr_t(3)) | reinterpret_cast<uintptr_t>(p);
+    }
+
+    // 提取 bit 0：1 表示黑色，0 表示红色
+    inline bool isBlack() const {
+        return (__rb_parent_color & uintptr_t(1)) != 0;
+    }
+
+    // 改变颜色标记
+    inline void setColor(bool black) {
+        if (black) {
+            __rb_parent_color |= uintptr_t(1);
+        } else {
+            __rb_parent_color &= ~uintptr_t(1);
+        }
+    }
+};
+```
 
 #### ② 侵入式设计与零间接寻址
 
