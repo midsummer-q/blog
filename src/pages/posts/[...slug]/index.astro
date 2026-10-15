@@ -109,17 +109,11 @@ const ogImage = ogImageUrl
   pubDatetime={pubDatetime}
   modDatetime={modDatetime}
 >
-  <Header />
-
-  <BackButton />
+  <Header class={headings.length > 0 ? "xl:max-w-[1140px]" : ""} />
 
   <main
     id="main-content"
-    class:list={[
-      "app-layout",
-      { "mt-8": !config.features.showBackButton },
-      { "xl:max-w-[1140px]": headings.length > 0 },
-    ]}
+    class:list={["app-layout", { "xl:max-w-[1140px]": headings.length > 0 }]}
     data-pagefind-body
   >
     <div
@@ -131,6 +125,8 @@ const ogImage = ogImageUrl
       ]}
     >
       <div class="max-w-app min-w-0">
+        <BackButton />
+
         <h1
           style={{ viewTransitionName: toTransitionName(post.id) }}
           class="text-accent inline-block text-2xl font-bold sm:text-3xl"
@@ -152,7 +148,11 @@ const ogImage = ogImageUrl
           <EditPost {hideEditPost} {post} class="max-sm:hidden" />
         </div>
 
-        {post.data.series && <SeriesCard currentPost={post} {allPosts} />}
+        {
+          post.data.series && (
+            <SeriesCard currentPost={post} {allPosts} variant="compact" />
+          )
+        }
 
         <article
           id="article"
@@ -181,6 +181,12 @@ const ogImage = ogImageUrl
 
         <ShareLinks />
 
+        {
+          post.data.series && (
+            <SeriesCard currentPost={post} {allPosts} variant="full" />
+          )
+        }
+
         <hr class="my-8 border-dashed" />
 
         <AdjacentPostNav {prevPost} {nextPost} />
@@ -197,7 +203,7 @@ const ogImage = ogImageUrl
       }
     </div>
   </main>
-  <Footer />
+  <Footer class={headings.length > 0 ? "xl:max-w-[1140px]" : ""} />
 </PostLayout>
 
 <script is:inline data-astro-rerun>

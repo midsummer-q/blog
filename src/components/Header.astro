@@ -31,6 +31,12 @@ const isActive = (path: string) => {
   const pathArray = path.split("/").filter(p => p.trim());
   return currentPath === path || currentPathArray[0] === pathArray[0];
 };
+
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
 ---
 
 <a
@@ -42,14 +48,17 @@ const isActive = (path: string) => {
 </a>
 
 <header
-  class="app-layout flex flex-col items-center justify-between sm:flex-row"
+  class:list={[
+    "app-layout flex flex-col items-center justify-between sm:flex-row",
+    className,
+  ]}
 >
   <div
-    class="border-border bg-background/90 relative flex w-full items-baseline justify-between border-b py-4 sm:items-center sm:py-5 transition-colors duration-200"
+    class="border-border bg-background/90 relative flex w-full items-baseline justify-between border-b py-4 transition-colors duration-200 sm:items-center sm:py-5"
   >
     <a
       href={getRelativeLocaleUrl(locale, "")}
-      class="font-mono text-[21px] sm:text-[22px] font-semibold tracking-tight whitespace-nowrap text-foreground hover:text-accent transition-colors duration-150"
+      class="text-foreground hover:text-accent font-mono text-[21px] font-semibold tracking-tight whitespace-nowrap transition-colors duration-150 sm:text-[22px]"
     >
       {site.title}
     </a>
@@ -71,12 +80,12 @@ const isActive = (path: string) => {
       </button>
       <ul
         id="menu-items"
-        class="mt-4 hidden w-44 grid-cols-2 place-content-center gap-2 sm:mt-0 sm:flex sm:w-auto sm:items-center sm:gap-x-7 md:gap-x-8 text-[14px] sm:text-[15px] font-medium tracking-wide text-foreground/85"
+        class="text-foreground/85 mt-4 hidden w-44 grid-cols-2 place-content-center gap-2 text-[14px] font-medium tracking-wide sm:mt-0 sm:flex sm:w-auto sm:items-center sm:gap-x-7 sm:text-[15px] md:gap-x-8"
       >
         <li class="col-span-2">
           <a
             href={getRelativeLocaleUrl(locale, "posts")}
-            class="hover:text-accent hover:underline hover:decoration-foreground/30 hover:underline-offset-6 transition-colors duration-150"
+            class="hover:text-accent hover:decoration-foreground/30 transition-colors duration-150 hover:underline hover:underline-offset-6"
             class:list={{ "active-nav": isActive("/posts") }}
           >
             {t.nav.posts}
@@ -85,7 +94,7 @@ const isActive = (path: string) => {
         <li class="col-span-2">
           <a
             href={getRelativeLocaleUrl(locale, "tags")}
-            class="hover:text-accent hover:underline hover:decoration-foreground/30 hover:underline-offset-6 transition-colors duration-150"
+            class="hover:text-accent hover:decoration-foreground/30 transition-colors duration-150 hover:underline hover:underline-offset-6"
             class:list={{ "active-nav": isActive("/tags") }}
           >
             {t.nav.tags}
@@ -94,7 +103,7 @@ const isActive = (path: string) => {
         <li class="col-span-2">
           <a
             href={getRelativeLocaleUrl(locale, "series")}
-            class="hover:text-accent hover:underline hover:decoration-foreground/30 hover:underline-offset-6 transition-colors duration-150"
+            class="hover:text-accent hover:decoration-foreground/30 transition-colors duration-150 hover:underline hover:underline-offset-6"
             class:list={{ "active-nav": isActive("/series") }}
           >
             {t.nav.series ?? "专栏"}
@@ -103,7 +112,7 @@ const isActive = (path: string) => {
         <li class="col-span-2">
           <a
             href={getRelativeLocaleUrl(locale, "lab")}
-            class="hover:text-accent hover:underline hover:decoration-foreground/30 hover:underline-offset-6 transition-colors duration-150"
+            class="hover:text-accent hover:decoration-foreground/30 transition-colors duration-150 hover:underline hover:underline-offset-6"
             class:list={{ "active-nav": isActive("/lab") }}
           >
             {t.nav.lab ?? "实验室"}
@@ -112,7 +121,7 @@ const isActive = (path: string) => {
         <li class="col-span-2">
           <a
             href={getRelativeLocaleUrl(locale, "about")}
-            class="hover:text-accent hover:underline hover:decoration-foreground/30 hover:underline-offset-6 transition-colors duration-150"
+            class="hover:text-accent hover:decoration-foreground/30 transition-colors duration-150 hover:underline hover:underline-offset-6"
             class:list={{ "active-nav": isActive("/about") }}
           >
             {t.nav.about}
@@ -124,13 +133,13 @@ const isActive = (path: string) => {
               <LinkButton
                 href={getRelativeLocaleUrl(locale, "archives")}
                 class:list={[
-                  "focus-outline flex size-full justify-center p-3 sm:relative sm:size-7 sm:p-0 hover:text-accent transition-colors duration-150",
+                  "focus-outline hover:text-accent flex size-full justify-center p-3 transition-colors duration-150 sm:relative sm:size-7 sm:p-0",
                   { "active-nav": isActive("/archives") },
                 ]}
                 title="归档 (Archives)"
                 aria-label={t.nav.archives}
               >
-                <IconArchive class="hidden sm:absolute sm:top-1/2 sm:left-1/2 sm:block size-[18px] sm:-translate-x-1/2 sm:-translate-y-1/2" />
+                <IconArchive class="hidden size-[18px] sm:absolute sm:top-1/2 sm:left-1/2 sm:block sm:-translate-x-1/2 sm:-translate-y-1/2" />
                 <span class="sm:sr-only">{t.nav.archives}</span>
               </LinkButton>
             </li>
@@ -141,7 +150,9 @@ const isActive = (path: string) => {
             <li class="col-span-1 flex items-center justify-center">
               <LinkButton
                 href={getRelativeLocaleUrl(locale, "search")}
-                class:list={["focus-outline relative size-7 hover:text-accent transition-colors duration-150"]}
+                class:list={[
+                  "focus-outline hover:text-accent relative size-7 transition-colors duration-150",
+                ]}
                 title="全站搜索 (Search)"
                 aria-label={t.nav.search}
               >
@@ -156,7 +167,7 @@ const isActive = (path: string) => {
             <li class="col-span-1 flex items-center justify-center">
               <button
                 id="theme-btn"
-                class="focus-outline hover:text-accent relative size-7 transition-colors duration-150 cursor-pointer"
+                class="focus-outline hover:text-accent relative size-7 cursor-pointer transition-colors duration-150"
                 title={t.a11y.toggleTheme}
                 aria-label="auto"
                 aria-live="polite"
