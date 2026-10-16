@@ -13,14 +13,14 @@ tags:
   - 零信任
 series:
   name: 计算机网络通识
-  order: 2
+  order: 18
 description: 如何从底层构建一套真正的零配置、分布式点对点 Mesh VPN？本文深度精译 Tailscale 联合创始人兼 CEO Avery Pennarun 的架构奠基名作，完整收录全部 9 张原版高清网络架构图，从 WireGuard 数据平面、控制平面密钥中继、OIDC 身份联动，到分布式 ACL、双向记账审计与渐进式零信任演进，全景讲透现代网络拓扑的革命。
 ---
 
 > [!NOTE] 译者序
 > 本文翻译自 Tailscale 官方技术博客的架构奠基之作 [《How Tailscale works》](https://tailscale.com/blog/how-tailscale-works)，原作者为 Tailscale 联合创始人兼 CEO **Avery Pennarun**（著名开源黑客，`bup`、`sshuttle` 的作者）。
 >
-> 如果说前一篇 [《NAT 穿透是如何工作的》](/blog/posts/how-nat-traversal-works/) 是从微观的 Socket 与数据包层面手撕防火墙与打洞算法，那么本文则是从**宏观的系统工程与网络拓扑**层面，彻底推翻传统中心化 VPN，建立起一套“控制面集中、数据面分布式”的现代零信任虚拟组网全景图。
+> 如果说专题文章 [《NAT 穿透是如何工作的》](/blog/posts/how-nat-traversal-works/) 是从微观的 Socket 与数据包层面手撕防火墙与打洞算法，那么本文则是从**宏观的系统工程与网络拓扑**层面，彻底推翻传统中心化 VPN，建立起一套“控制面集中、数据面分布式”的现代零信任虚拟组网全景图。
 >
 > 译文完整收录了 Tailscale 原版由设计师 Ross Zurowski 绘制的全部 9 张高清网络架构矢量图，并对中心辐射缺陷、WireGuard 点对点网状拓扑、基于身份的分布式 ACL 及双向记账审计机制进行了深度剖析。
 
@@ -322,3 +322,9 @@ Tailscale 的创新再次让人击节赞叹：**我们让通信两端的每一�
 它不仅撕下了传统 VPN 集中器的性能枷锁，更将原本被各大云厂商割裂的互联网，重新缝合成了一张任何两台设备都能随时随地自由对话的去中心化纯净网络。
 
 *(再次向我们才华横溢的设计师 Ross Zurowski 致敬，感谢他为本文绘制的精彩图解！)*
+
+---
+
+上一篇：[VPN 的底层原理](/blog/posts/what-is-a-vpn/)
+
+下一篇：[NAT 穿透专题](/blog/posts/how-nat-traversal-works/)

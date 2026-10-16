@@ -1,0 +1,132 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 1200 620"
+  role="img"
+  aria-labelledby="title desc"
+>
+  <title id="title">同一局域网中的 ARP 解析与以太网交付</title>
+  <desc id="desc">
+    A 与 B 接到同一台交换机。A 在没有可用邻居缓存时广播查询 B 的 MAC，B
+    通常单播回复，A 随后用 B 的 MAC 发送 IPv4 数据。
+  </desc>
+  <defs>
+    <marker
+      id="arrow"
+      viewBox="0 0 10 10"
+      refX="9"
+      refY="5"
+      markerWidth="7"
+      markerHeight="7"
+      orient="auto-start-reverse"
+    >
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2563eb" />
+    </marker>
+  </defs>
+  <rect width="1200" height="620" rx="20" fill="#fff" />
+  <g
+    font-family="Microsoft YaHei, PingFang SC, Noto Sans CJK SC, sans-serif"
+    fill="#172033"
+  >
+    <text x="50" y="55" font-size="30" font-weight="700">
+      先解析本地邻居，再发送数据
+    </text>
+    <text x="50" y="94" font-size="20" fill="#526075">
+      教学模型：同一 VLAN、同一 IPv4 子网；未启用隔离策略
+    </text>
+    <rect
+      x="50"
+      y="135"
+      width="280"
+      height="150"
+      rx="14"
+      fill="#eff6ff"
+      stroke="#93b8ec"
+      stroke-width="2"
+    />
+    <text x="75" y="175" font-size="24" font-weight="700">电脑 A</text>
+    <text x="75" y="215" font-size="21">192.168.10.10/24</text>
+    <text x="75" y="253" font-size="19">MAC：02:00:00:00:00:0a</text>
+    <rect
+      x="455"
+      y="135"
+      width="290"
+      height="150"
+      rx="14"
+      fill="#f1f5f9"
+      stroke="#a4b2c3"
+      stroke-width="2"
+    />
+    <text x="480" y="175" font-size="24" font-weight="700">交换机</text>
+    <text x="480" y="215" font-size="20">从源 MAC 学习接口位置</text>
+    <text x="480" y="253" font-size="20">按目的 MAC 决定转发</text>
+    <rect
+      x="870"
+      y="135"
+      width="280"
+      height="150"
+      rx="14"
+      fill="#ecfdf5"
+      stroke="#87cfb4"
+      stroke-width="2"
+    />
+    <text x="895" y="175" font-size="24" font-weight="700">电脑 B</text>
+    <text x="895" y="215" font-size="21">192.168.10.20/24</text>
+    <text x="895" y="253" font-size="19">MAC：02:00:00:00:00:0b</text>
+    <path
+      d="M 335 220 H 445"
+      fill="none"
+      stroke="#2563eb"
+      stroke-width="3"
+      marker-end="url(#arrow)"
+    />
+    <path
+      d="M 750 220 H 860"
+      fill="none"
+      stroke="#2563eb"
+      stroke-width="3"
+      marker-end="url(#arrow)"
+    />
+    <text x="366" y="196" font-size="18" fill="#526075">接口 1</text>
+    <text x="785" y="196" font-size="18" fill="#526075">接口 2</text>
+    <rect
+      x="50"
+      y="330"
+      width="530"
+      height="220"
+      rx="14"
+      fill="#f8fafc"
+      stroke="#d4dce6"
+      stroke-width="2"
+    />
+    <text x="75" y="373" font-size="24" font-weight="700">
+      ① ARP 解析：缓存缺失时
+    </text>
+    <text x="75" y="418" font-size="21">A 广播询问：谁是 192.168.10.20？</text>
+    <text x="75" y="461" font-size="21">B 通常单播回答：这是我的 MAC</text>
+    <text x="75" y="507" font-size="20" fill="#526075">
+      A 保存：B 的 IPv4 地址 → B 的 MAC
+    </text>
+    <rect
+      x="620"
+      y="330"
+      width="530"
+      height="220"
+      rx="14"
+      fill="#f8fafc"
+      stroke="#d4dce6"
+      stroke-width="2"
+    />
+    <text x="645" y="373" font-size="24" font-weight="700">
+      ② 以太网帧：装入 IPv4 数据
+    </text>
+    <text x="645" y="418" font-size="21">目的 MAC：B 的网卡地址</text>
+    <text x="645" y="461" font-size="21">目的 IP：192.168.10.20</text>
+    <text x="645" y="507" font-size="20" fill="#526075">
+      交换机转发帧，B 接收并继续处理
+    </text>
+    <text x="50" y="595" font-size="20" fill="#526075">
+      目标在远端时：先查路由；若经网关转发，解析网关的 MAC，IP
+      目的仍为远端目标。
+    </text>
+  </g>
+</svg>

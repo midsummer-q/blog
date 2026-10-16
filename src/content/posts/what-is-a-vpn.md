@@ -13,18 +13,18 @@ tags:
   - 架构设计
 series:
   name: 计算机网络通识
-  order: 1
+  order: 17
 description: 虚拟专用网络（VPN）究竟是如何工作的？为什么它可以实现 IP 隐藏与流量加密？本文深度整理全球网络巨头 Cloudflare Learning Center 权威教程，完整收录官方原版高清网络架构图解，系统拆解加密隧道四步流转、长号效应（Trombone Effect）时延、传统“城堡与护城河”模型的致命缺陷，以及现代网络为何正在从 VPN 全面演进至 SASE 与零信任。
 ---
 
 > [!NOTE] 专栏导读
 > 本文翻译与深度整理自全球顶级边缘云与网络安全基础设施巨头 Cloudflare 的权威知识库 [《Cloudflare Learning Center: What is a VPN?》](https://www.cloudflare.com/learning/access-management/what-is-a-vpn/)。
 >
-> 在本专栏的前面两篇文章中，我们已经深度探讨了新一代点对点 Mesh VPN（[《Tailscale 是如何工作的》](/blog/posts/how-tailscale-works/)）以及其最核心的底层打洞黑魔法（[《NAT 穿透是如何工作的》](/blog/posts/how-nat-traversal-works/)）。
+> 本专栏的另外两篇文章分别讨论了新一代点对点 Mesh VPN（[《Tailscale 是如何工作的》](/blog/posts/how-tailscale-works/)）以及其最核心的底层打洞黑魔法（[《NAT 穿透是如何工作的》](/blog/posts/how-nat-traversal-works/)）。
 >
 > 但对于刚接触计算机网络的初学者来说，**VPN（Virtual Private Network，虚拟专用网络）** 本身究竟是什么？它为什么要叫“虚拟”？它为什么能骗过操作系统、隐藏你的真实 IP 并防范窃听？传统中心化 VPN 又存在哪些致命性能与安全瓶颈？
 >
-> 本文将作为《计算机网络通识》专栏关于虚拟组网的**基石开篇**，结合 Cloudflare 官方原版图解，为你系统拆解 VPN 的底层机理与现代演进。
+> 本文将作为《计算机网络通识》专栏中虚拟组网专题的**开篇**，结合 Cloudflare 官方原版图解，为你系统拆解 VPN 的底层机理与现代演进。
 
 ---
 
@@ -204,5 +204,11 @@ VPN 最核心的能力在于两点：**提供强加密通信** 以及 **提供�
 1. **VPN 的本质**：是运行在第 3 层的端到端加密管道，通过虚拟网卡拦截系统全局流量，借道第三方服务器实现 IP 匿名与密文防窥；
 2. **传统 VPN 的局限**：中心化网关容易引发长号效应（Trombone Effect）导致高延迟，且“城堡与护城河”的边界模型难以抵御现代内网横向移动渗透；
 3. **架构的进阶之路**：
-   * 如果你需要解决**长号效应与中心瓶颈**，请阅读本专栏第 2 篇：[《Tailscale 是如何工作的：从零构建现代 Mesh VPN 架构》](/blog/posts/how-tailscale-works/)；
-   * 如果你想搞懂**深处防火墙后的两台设备如何不借助中心服务器直接打洞握手**，请精读本专栏第 3 篇：[《NAT 穿透是如何工作的：技术原理与终极指南》](/blog/posts/how-nat-traversal-works/)。
+   * 如果你需要解决**长号效应与中心瓶颈**，请阅读本专栏第 18 篇：[《Tailscale 是如何工作的：从零构建现代 Mesh VPN 架构》](/blog/posts/how-tailscale-works/)；
+   * 如果你想搞懂**深处防火墙后的两台设备如何不借助中心服务器直接打洞握手**，请精读本专栏第 19 篇：[《NAT 穿透是如何工作的：技术原理与终极指南》](/blog/posts/how-nat-traversal-works/)。
+
+---
+
+上一篇：[IPv6 不只是地址变长](/blog/posts/ipv6-is-more-than-longer-addresses/)
+
+下一篇：[Tailscale 的工作原理](/blog/posts/how-tailscale-works/)

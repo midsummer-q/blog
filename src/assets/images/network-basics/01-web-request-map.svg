@@ -1,0 +1,243 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 1200 730"
+  role="img"
+  aria-labelledby="title desc"
+>
+  <title id="title">网页访问中的地址解析与数据传输</title>
+  <desc id="desc">
+    DNS 先提供候选地址，网页数据经网关和路由到达 HTTPS 端点。
+  </desc>
+  <defs>
+    <marker
+      id="blue-arrow"
+      markerWidth="10"
+      markerHeight="10"
+      refX="8"
+      refY="3"
+      orient="auto"
+      markerUnits="strokeWidth"
+    >
+      <path d="M0,0 L0,6 L9,3 z" fill="#246a9d" />
+    </marker>
+    <marker
+      id="green-arrow"
+      markerWidth="10"
+      markerHeight="10"
+      refX="8"
+      refY="3"
+      orient="auto"
+      markerUnits="strokeWidth"
+    >
+      <path d="M0,0 L0,6 L9,3 z" fill="#287765" />
+    </marker>
+    <marker
+      id="dark-arrow"
+      markerWidth="10"
+      markerHeight="10"
+      refX="8"
+      refY="3"
+      orient="auto"
+      markerUnits="strokeWidth"
+    >
+      <path d="M0,0 L0,6 L9,3 z" fill="#42566c" />
+    </marker>
+  </defs>
+  <rect width="1200" height="730" rx="20" fill="#fff" />
+  <g
+    font-family="Microsoft YaHei, PingFang SC, Noto Sans CJK SC, sans-serif"
+    fill="#172e45"
+  >
+    <text x="48" y="53" font-size="32" font-weight="700">
+      打开网页：地址解析与数据传输
+    </text>
+    <text x="48" y="91" font-size="22" fill="#526477">
+      主线：新建连接的 HTTPS / HTTP/1.1 over TCP
+    </text>
+    <rect
+      x="48"
+      y="129"
+      width="1104"
+      height="137"
+      rx="16"
+      fill="#f4f8fc"
+      stroke="#c9d9e7"
+    />
+    <text x="76" y="164" font-size="22" fill="#246a9d">地址解析（旁支）</text>
+    <text x="76" y="203" font-size="27" font-weight="700">
+      浏览器中的主机名
+    </text>
+    <text x="76" y="239" font-size="25">www.example.com</text>
+    <rect
+      x="842"
+      y="157"
+      width="278"
+      height="81"
+      rx="12"
+      fill="#e6f0fb"
+      stroke="#88aacc"
+    />
+    <text x="981" y="205" font-size="28" font-weight="700" text-anchor="middle">
+      DNS 解析器
+    </text>
+    <path
+      d="M372 183 H828"
+      fill="none"
+      stroke="#246a9d"
+      stroke-width="3"
+      marker-end="url(#blue-arrow)"
+    />
+    <text x="594" y="170" font-size="22" fill="#246a9d" text-anchor="middle">
+      查询主机名
+    </text>
+    <path
+      d="M842 229 H386"
+      fill="none"
+      stroke="#287765"
+      stroke-width="3"
+      marker-end="url(#green-arrow)"
+    />
+    <text x="602" y="216" font-size="22" fill="#287765" text-anchor="middle">
+      返回候选 IP：203.0.113.80
+    </text>
+    <text x="48" y="313" font-size="24" font-weight="700">
+      网页通信的数据路径
+    </text>
+    <rect
+      x="48"
+      y="338"
+      width="220"
+      height="108"
+      rx="13"
+      fill="#e9f1fa"
+      stroke="#88aacc"
+    />
+    <text x="158" y="379" font-size="28" font-weight="700" text-anchor="middle">
+      电脑
+    </text>
+    <text x="158" y="419" font-size="22" text-anchor="middle">
+      192.168.10.20/24
+    </text>
+    <rect
+      x="344"
+      y="338"
+      width="220"
+      height="108"
+      rx="13"
+      fill="#fff2dd"
+      stroke="#c9ac78"
+    />
+    <text x="454" y="379" font-size="28" font-weight="700" text-anchor="middle">
+      本地网关
+    </text>
+    <text x="454" y="419" font-size="22" text-anchor="middle">
+      192.168.10.1
+    </text>
+    <rect
+      x="640"
+      y="338"
+      width="220"
+      height="108"
+      rx="13"
+      fill="#f0f3f7"
+      stroke="#a3b4c5"
+    />
+    <text x="750" y="379" font-size="28" font-weight="700" text-anchor="middle">
+      互联网路由
+    </text>
+    <text x="750" y="419" font-size="22" text-anchor="middle">
+      沿途逐跳转发
+    </text>
+    <rect
+      x="936"
+      y="338"
+      width="216"
+      height="108"
+      rx="13"
+      fill="#e6f4ee"
+      stroke="#8db7a4"
+    />
+    <text
+      x="1044"
+      y="379"
+      font-size="28"
+      font-weight="700"
+      text-anchor="middle"
+    >
+      HTTPS 端点
+    </text>
+    <text x="1044" y="419" font-size="22" text-anchor="middle">
+      203.0.113.80:443
+    </text>
+    <path
+      d="M268 391 H330"
+      fill="none"
+      stroke="#42566c"
+      stroke-width="3"
+      marker-end="url(#dark-arrow)"
+    />
+    <path
+      d="M564 391 H626"
+      fill="none"
+      stroke="#42566c"
+      stroke-width="3"
+      marker-end="url(#dark-arrow)"
+    />
+    <path
+      d="M860 391 H922"
+      fill="none"
+      stroke="#42566c"
+      stroke-width="3"
+      marker-end="url(#dark-arrow)"
+    />
+    <text x="48" y="505" font-size="24" font-weight="700">
+      理解顺序：先拿到地址，再建立连接并请求资源
+    </text>
+    <g font-size="27" font-weight="700" text-anchor="middle">
+      <rect x="48" y="532" width="160" height="65" rx="11" fill="#e9f1fa" />
+      <text x="128" y="573">DNS</text>
+      <rect x="270" y="532" width="160" height="65" rx="11" fill="#edf2f7" />
+      <text x="350" y="573">TCP</text>
+      <rect x="492" y="532" width="160" height="65" rx="11" fill="#fff2dd" />
+      <text x="572" y="573">TLS</text>
+      <rect x="714" y="532" width="160" height="65" rx="11" fill="#e6f4ee" />
+      <text x="794" y="573">HTTP</text>
+      <rect x="936" y="532" width="216" height="65" rx="11" fill="#f0ebfa" />
+      <text x="1044" y="573">解析与渲染</text>
+    </g>
+    <path
+      d="M208 564 H257"
+      fill="none"
+      stroke="#42566c"
+      stroke-width="3"
+      marker-end="url(#dark-arrow)"
+    />
+    <path
+      d="M430 564 H479"
+      fill="none"
+      stroke="#42566c"
+      stroke-width="3"
+      marker-end="url(#dark-arrow)"
+    />
+    <path
+      d="M652 564 H701"
+      fill="none"
+      stroke="#42566c"
+      stroke-width="3"
+      marker-end="url(#dark-arrow)"
+    />
+    <path
+      d="M874 564 H923"
+      fill="none"
+      stroke="#42566c"
+      stroke-width="3"
+      marker-end="url(#dark-arrow)"
+    />
+    <text x="48" y="647" font-size="22" fill="#526477">
+      缓存可省略部分步骤；连接可复用；HTTP/3 使用 QUIC/UDP。
+    </text>
+    <text x="48" y="685" font-size="22" fill="#526477">
+      地址仅为示意；DNS 解析器并非网页正文的中转站。
+    </text>
+  </g>
+</svg>

@@ -1,0 +1,205 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="1200"
+  height="680"
+  viewBox="0 0 1200 680"
+  role="img"
+  aria-labelledby="title desc"
+>
+  <title id="title">一个数据包的逐跳转发</title>
+  <desc id="desc">
+    主机A经过R1与R2到达主机B。源IP192.0.2.10和目的IP203.0.113.20保持不变。三个链路的MAC地址分别为A到R1左、R1右到R2左、R2右到B。TTL分别为64、63、62。IPv4首部校验和随TTL更新。
+  </desc>
+  <defs>
+    <marker
+      id="arrow"
+      markerWidth="8"
+      markerHeight="8"
+      refX="7"
+      refY="4"
+      orient="auto"
+    >
+      <path d="M0 0 L8 4 L0 8 Z" fill="#2563eb" />
+    </marker>
+    <style>
+      text {
+        font-family:
+          "Microsoft YaHei", "Noto Sans CJK SC", "PingFang SC", sans-serif;
+        fill: #172033;
+      }
+      .title {
+        font-size: 30px;
+        font-weight: 700;
+      }
+      .subtitle {
+        font-size: 18px;
+        fill: #4b5c73;
+      }
+      .label {
+        font-size: 21px;
+        font-weight: 700;
+      }
+      .body {
+        font-size: 18px;
+      }
+      .small {
+        font-size: 16px;
+        fill: #4b5c73;
+      }
+      .mono {
+        font-family: Consolas, monospace;
+        font-size: 18px;
+      }
+      .accent {
+        fill: #1d4ed8;
+        font-weight: 700;
+      }
+    </style>
+  </defs>
+  <rect width="1200" height="680" fill="#ffffff" />
+  <text x="40" y="51" class="title">04 / 一个数据包的逐跳转发</text>
+  <text x="40" y="85" class="subtitle">
+    原创教学模型：三段以太网，无 NAT、隧道与分片；MAC 使用接口代号
+  </text>
+  <rect
+    x="30"
+    y="110"
+    width="1140"
+    height="214"
+    rx="16"
+    fill="#f5f8fd"
+    stroke="#dce5f1"
+  />
+  <g text-anchor="middle">
+    <text x="294" y="143" class="mono">192.0.2.0/24</text>
+    <text x="600" y="143" class="mono">198.51.100.0/24</text>
+    <text x="906" y="143" class="mono">203.0.113.0/24</text>
+    <rect
+      x="50"
+      y="168"
+      width="180"
+      height="106"
+      rx="12"
+      fill="#ffffff"
+      stroke="#c0cee0"
+      stroke-width="2"
+    />
+    <text x="140" y="203" class="label">主机 A</text>
+    <text x="140" y="239" class="mono">192.0.2.10</text>
+    <rect
+      x="350"
+      y="168"
+      width="190"
+      height="106"
+      rx="12"
+      fill="#eaf1ff"
+      stroke="#8caeeb"
+      stroke-width="2"
+    />
+    <text x="445" y="197" class="label">路由器 R1</text>
+    <text x="445" y="227" class="small">左 192.0.2.1</text>
+    <text x="445" y="253" class="small">右 198.51.100.1</text>
+    <rect
+      x="660"
+      y="168"
+      width="190"
+      height="106"
+      rx="12"
+      fill="#eaf1ff"
+      stroke="#8caeeb"
+      stroke-width="2"
+    />
+    <text x="755" y="197" class="label">路由器 R2</text>
+    <text x="755" y="227" class="small">左 198.51.100.2</text>
+    <text x="755" y="253" class="small">右 203.0.113.1</text>
+    <rect
+      x="970"
+      y="168"
+      width="180"
+      height="106"
+      rx="12"
+      fill="#ffffff"
+      stroke="#c0cee0"
+      stroke-width="2"
+    />
+    <text x="1060" y="203" class="label">主机 B</text>
+    <text x="1060" y="239" class="mono">203.0.113.20</text>
+    <path
+      d="M230 218 H336"
+      stroke="#2563eb"
+      stroke-width="3"
+      marker-end="url(#arrow)"
+      fill="none"
+    />
+    <path
+      d="M540 218 H646"
+      stroke="#2563eb"
+      stroke-width="3"
+      marker-end="url(#arrow)"
+      fill="none"
+    />
+    <path
+      d="M850 218 H956"
+      stroke="#2563eb"
+      stroke-width="3"
+      marker-end="url(#arrow)"
+      fill="none"
+    />
+    <text x="294" y="303" class="body accent">TTL 64</text>
+    <text x="600" y="303" class="body accent">TTL 63</text>
+    <text x="906" y="303" class="body accent">TTL 62</text>
+  </g>
+  <text x="40" y="363" class="label">
+    每段链路上的帧：下一站变了，通信端点仍是 A 与 B
+  </text>
+  <g>
+    <rect
+      x="40"
+      y="387"
+      width="356"
+      height="208"
+      rx="12"
+      fill="#ffffff"
+      stroke="#cbd7e6"
+    />
+    <rect
+      x="422"
+      y="387"
+      width="356"
+      height="208"
+      rx="12"
+      fill="#ffffff"
+      stroke="#cbd7e6"
+    />
+    <rect
+      x="804"
+      y="387"
+      width="356"
+      height="208"
+      rx="12"
+      fill="#ffffff"
+      stroke="#cbd7e6"
+    />
+    <text x="60" y="422" class="label">链路 1：A → R1</text>
+    <text x="60" y="461" class="body accent">MAC：A → R1 左</text>
+    <text x="60" y="497" class="body">源 IP：192.0.2.10</text>
+    <text x="60" y="529" class="body">目的 IP：203.0.113.20</text>
+    <text x="60" y="568" class="small">TTL 64 · 初始首部校验和</text>
+    <text x="442" y="422" class="label">链路 2：R1 → R2</text>
+    <text x="442" y="461" class="body accent">MAC：R1 右 → R2 左</text>
+    <text x="442" y="497" class="body">源 IP：192.0.2.10</text>
+    <text x="442" y="529" class="body">目的 IP：203.0.113.20</text>
+    <text x="442" y="568" class="small">TTL 63 · 更新首部校验和</text>
+    <text x="824" y="422" class="label">链路 3：R2 → B</text>
+    <text x="824" y="461" class="body accent">MAC：R2 右 → B</text>
+    <text x="824" y="497" class="body">源 IP：192.0.2.10</text>
+    <text x="824" y="529" class="body">目的 IP：203.0.113.20</text>
+    <text x="824" y="568" class="small">TTL 62 · 再次更新首部校验和</text>
+  </g>
+  <text x="40" y="638" class="body">
+    路由表确定下一跳；ARP 解析本地下一跳的 MAC；路由器转发时构造新的链路帧。
+  </text>
+  <text x="1160" y="665" text-anchor="end" class="small">
+    计算机网络通识 · midsummer-q
+  </text>
+</svg>

@@ -1,0 +1,154 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 1200 620"
+  role="img"
+  aria-labelledby="title desc"
+>
+  <title id="title">/27 地址范围与下一跳选择</title>
+  <desc id="desc">
+    192.168.10.32/27 包含从 .32 到 .63 的 32 个地址。.34 主机向 .50
+    直接发送，向示意远端 203.0.113.80 则先发送给 .33 网关。
+  </desc>
+  <defs>
+    <marker
+      id="arrow"
+      markerWidth="10"
+      markerHeight="10"
+      refX="8"
+      refY="3"
+      orient="auto"
+      markerUnits="strokeWidth"
+    >
+      <path d="M0,0 L0,6 L9,3 z" fill="#31577b" />
+    </marker>
+  </defs>
+  <rect width="1200" height="620" rx="20" fill="#fff" />
+  <g
+    font-family="Microsoft YaHei, PingFang SC, Noto Sans CJK SC, sans-serif"
+    fill="#152b42"
+  >
+    <text x="48" y="55" font-size="28" font-weight="700">
+      一个 /27 地址块，两个发送方向
+    </text>
+    <text x="48" y="91" font-size="20" fill="#526477">
+      电脑：192.168.10.34/27　｜　掩码：255.255.255.224
+    </text>
+    <rect
+      x="48"
+      y="120"
+      width="1104"
+      height="135"
+      rx="14"
+      fill="#f3f6fa"
+      stroke="#c5d3df"
+    />
+    <text x="72" y="157" font-size="22" font-weight="700">
+      192.168.10.32/27：32 个地址
+    </text>
+    <rect x="72" y="178" width="185" height="50" rx="8" fill="#e5eaf0" />
+    <rect x="265" y="178" width="670" height="50" rx="8" fill="#d9efe6" />
+    <rect x="943" y="178" width="185" height="50" rx="8" fill="#e5eaf0" />
+    <text x="164" y="210" font-size="20" text-anchor="middle">
+      .32 网络地址
+    </text>
+    <text x="600" y="210" font-size="20" text-anchor="middle">
+      .33 — .62：30 个常规可用地址（含网关）
+    </text>
+    <text x="1035" y="210" font-size="20" text-anchor="middle">
+      .63 广播地址
+    </text>
+    <rect
+      x="48"
+      y="355"
+      width="280"
+      height="112"
+      rx="14"
+      fill="#e9f1fa"
+      stroke="#7a9fc3"
+      stroke-width="2"
+    />
+    <text x="188" y="394" font-size="23" font-weight="700" text-anchor="middle">
+      电脑
+    </text>
+    <text x="188" y="433" font-size="22" text-anchor="middle">
+      192.168.10.34
+    </text>
+    <path
+      d="M328 383 H408 V321 H524"
+      fill="none"
+      stroke="#31577b"
+      stroke-width="3"
+      marker-end="url(#arrow)"
+    />
+    <path
+      d="M328 435 H408 V477 H524"
+      fill="none"
+      stroke="#31577b"
+      stroke-width="3"
+      marker-end="url(#arrow)"
+    />
+    <text x="425" y="295" font-size="18" fill="#355570">匹配直连 /27</text>
+    <text x="414" y="510" font-size="18" fill="#355570">仅匹配默认 /0</text>
+    <rect
+      x="536"
+      y="278"
+      width="276"
+      height="88"
+      rx="12"
+      fill="#e6f4ee"
+      stroke="#8db7a4"
+    />
+    <text x="674" y="314" font-size="21" font-weight="700" text-anchor="middle">
+      本地目标 192.168.10.50
+    </text>
+    <text x="674" y="344" font-size="18" text-anchor="middle">
+      帧的目的 MAC = 目标的 MAC
+    </text>
+    <rect
+      x="536"
+      y="433"
+      width="276"
+      height="88"
+      rx="12"
+      fill="#fff2dc"
+      stroke="#d2b37d"
+    />
+    <text x="674" y="469" font-size="21" font-weight="700" text-anchor="middle">
+      网关 192.168.10.33
+    </text>
+    <text x="674" y="499" font-size="18" text-anchor="middle">
+      帧的目的 MAC = 网关的 MAC
+    </text>
+    <path
+      d="M812 477 H874"
+      fill="none"
+      stroke="#31577b"
+      stroke-width="3"
+      marker-end="url(#arrow)"
+    />
+    <rect
+      x="887"
+      y="433"
+      width="265"
+      height="88"
+      rx="12"
+      fill="#f3f6fa"
+      stroke="#aabccc"
+    />
+    <text
+      x="1019"
+      y="469"
+      font-size="21"
+      font-weight="700"
+      text-anchor="middle"
+    >
+      远端 203.0.113.80
+    </text>
+    <text x="1019" y="499" font-size="18" text-anchor="middle">
+      文档地址，仅用于推演
+    </text>
+    <text x="48" y="575" font-size="19" fill="#526477">
+      给网关的帧，内部 IP 包仍以远端为目的地；图示假设没有其他更具体路由。
+    </text>
+  </g>
+</svg>

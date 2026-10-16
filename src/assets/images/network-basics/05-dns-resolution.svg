@@ -1,0 +1,195 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 1200 835"
+  role="img"
+  aria-labelledby="title desc"
+>
+  <title id="title">递归解析器查询 DNS 的过程</title>
+  <desc id="desc">
+    客户端问递归解析器；解析器分别访问根、顶级域及权威服务器。
+  </desc>
+  <defs>
+    <marker
+      id="query-arrow"
+      markerWidth="10"
+      markerHeight="10"
+      refX="8"
+      refY="3"
+      orient="auto"
+      markerUnits="strokeWidth"
+    >
+      <path d="M0,0 L0,6 L9,3 z" fill="#246a9d" />
+    </marker>
+    <marker
+      id="reply-arrow"
+      markerWidth="10"
+      markerHeight="10"
+      refX="8"
+      refY="3"
+      orient="auto"
+      markerUnits="strokeWidth"
+    >
+      <path d="M0,0 L0,6 L9,3 z" fill="#287765" />
+    </marker>
+  </defs>
+  <rect width="1200" height="835" rx="20" fill="#fff" />
+  <g
+    font-family="Microsoft YaHei, PingFang SC, Noto Sans CJK SC, sans-serif"
+    fill="#172e45"
+  >
+    <text x="40" y="54" font-size="32" font-weight="700">
+      DNS：由递归解析器逐级询问
+    </text>
+    <text x="40" y="95" font-size="22" fill="#526477">
+      冷缓存概念模型｜查询 www.example.com 的 A 记录
+    </text>
+    <text x="865" y="95" font-size="22" fill="#526477">蓝：查询　绿：响应</text>
+    <rect
+      x="40"
+      y="340"
+      width="245"
+      height="150"
+      rx="15"
+      fill="#e9f1fa"
+      stroke="#88aacc"
+      stroke-width="2"
+    />
+    <text x="162" y="386" font-size="29" font-weight="700" text-anchor="middle">
+      客户端
+    </text>
+    <text x="162" y="429" font-size="25" text-anchor="middle">
+      www.example.com
+    </text>
+    <text x="162" y="465" font-size="22" fill="#526477" text-anchor="middle">
+      只向解析器发问
+    </text>
+    <rect
+      x="390"
+      y="270"
+      width="260"
+      height="310"
+      rx="16"
+      fill="#edf6f2"
+      stroke="#83ac9d"
+      stroke-width="2"
+    />
+    <text x="520" y="323" font-size="29" font-weight="700" text-anchor="middle">
+      递归解析器
+    </text>
+    <text x="520" y="365" font-size="22" text-anchor="middle">
+      替客户端继续查询
+    </text>
+    <text x="520" y="422" font-size="22" text-anchor="middle">
+      接收转介信息
+    </text>
+    <text x="520" y="461" font-size="22" text-anchor="middle">
+      获得最终答案
+    </text>
+    <text x="520" y="538" font-size="22" fill="#526477" text-anchor="middle">
+      保存可缓存的结果
+    </text>
+    <rect
+      x="890"
+      y="150"
+      width="270"
+      height="110"
+      rx="13"
+      fill="#f0f3f7"
+      stroke="#a3b4c5"
+    />
+    <text
+      x="1025"
+      y="193"
+      font-size="28"
+      font-weight="700"
+      text-anchor="middle"
+    >
+      根服务器
+    </text>
+    <text x="1025" y="234" font-size="22" text-anchor="middle">转介 .com</text>
+    <rect
+      x="890"
+      y="370"
+      width="270"
+      height="110"
+      rx="13"
+      fill="#fff2dd"
+      stroke="#c9ac78"
+    />
+    <text
+      x="1025"
+      y="413"
+      font-size="28"
+      font-weight="700"
+      text-anchor="middle"
+    >
+      .com 服务器
+    </text>
+    <text x="1025" y="454" font-size="22" text-anchor="middle">
+      转介 example.com
+    </text>
+    <rect
+      x="890"
+      y="570"
+      width="270"
+      height="110"
+      rx="13"
+      fill="#e6f4ee"
+      stroke="#8db7a4"
+    />
+    <text
+      x="1025"
+      y="613"
+      font-size="27"
+      font-weight="700"
+      text-anchor="middle"
+    >
+      example.com 权威
+    </text>
+    <text x="1025" y="654" font-size="22" text-anchor="middle">
+      A = 203.0.113.80
+    </text>
+    <g fill="none" stroke-width="3">
+      <path d="M285 390 H377" stroke="#246a9d" marker-end="url(#query-arrow)" />
+      <path d="M390 445 H298" stroke="#287765" marker-end="url(#reply-arrow)" />
+      <path
+        d="M650 300 H700 V183 H877"
+        stroke="#246a9d"
+        marker-end="url(#query-arrow)"
+      />
+      <path
+        d="M890 224 H744 V342 H663"
+        stroke="#287765"
+        marker-end="url(#reply-arrow)"
+      />
+      <path d="M650 401 H877" stroke="#246a9d" marker-end="url(#query-arrow)" />
+      <path d="M890 443 H663" stroke="#287765" marker-end="url(#reply-arrow)" />
+      <path
+        d="M650 502 H744 V603 H877"
+        stroke="#246a9d"
+        marker-end="url(#query-arrow)"
+      />
+      <path
+        d="M890 643 H700 V544 H663"
+        stroke="#287765"
+        marker-end="url(#reply-arrow)"
+      />
+    </g>
+    <g font-size="22">
+      <text x="292" y="373" fill="#246a9d">① 查询</text>
+      <text x="292" y="477" fill="#287765">⑧ 地址</text>
+      <text x="771" y="168" fill="#246a9d">② 查询</text>
+      <text x="754" y="255" fill="#287765">③ 转介 .com</text>
+      <text x="735" y="383" fill="#246a9d">④ 查询</text>
+      <text x="730" y="475" fill="#287765">⑤ 转介权威</text>
+      <text x="771" y="588" fill="#246a9d">⑥ 查询</text>
+      <text x="749" y="675" fill="#287765">⑦ A 记录</text>
+    </g>
+    <text x="40" y="742" font-size="24" fill="#526477">
+      命中缓存时，可直接回答或跳过部分层级。
+    </text>
+    <text x="40" y="787" font-size="22" fill="#526477">
+      地址仅为示意，不代表 example.com 的实际记录或真实网络。
+    </text>
+  </g>
+</svg>
