@@ -13,7 +13,7 @@ tags:
   - 架构设计
 series:
   name: 计算机网络通识
-  order: 0
+  order: 2
 description: 全景拆解现代网络最神奇的黑魔法：两台深处不同局域网、被多层防火墙和 NAT 隔离的设备，如何在没有公网 IP 的情况下直接建立端到端连接？本文深度精译 Tailscale 首席工程师 David Anderson 的神作，包含全部 21 张原版高清网络架构与时序图，从有状态防火墙、STUN 探测、NAT 锥形分类（EIM/EDM），到生日悖论端口碰撞、UPnP/PCP、CGNAT 回环（Hairpinning）与 ICE 算法，全景讲透 P2P 直连与网络穿透的底层技艺。
 ---
 
