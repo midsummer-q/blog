@@ -13,7 +13,7 @@ tags:
   - 零信任
 series:
   name: 计算机网络通识
-  order: 1
+  order: 2
 description: 如何从底层构建一套真正的零配置、分布式点对点 Mesh VPN？本文深度精译 Tailscale 联合创始人兼 CEO Avery Pennarun 的架构奠基名作，完整收录全部 9 张原版高清网络架构图，从 WireGuard 数据平面、控制平面密钥中继、OIDC 身份联动，到分布式 ACL、双向记账审计与渐进式零信任演进，全景讲透现代网络拓扑的革命。
 ---
 
