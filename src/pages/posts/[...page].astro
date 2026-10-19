@@ -32,9 +32,14 @@ const t = useTranslations(locale);
     <ul>
       {page.data.map(data => <Card {...data} />)}
     </ul>
+    {
+      page.lastPage > 1 && (
+        <div class="mt-8">
+          <Pagination {page} />
+        </div>
+      )
+    }
   </Main>
 
-  <Pagination {page} />
-
-  <Footer noMarginTop={page.lastPage > 1} />
+  <Footer />
 </Layout>
