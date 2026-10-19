@@ -290,6 +290,8 @@ TCP 443 测试成功，但浏览器提示证书名称不匹配。下一步应优
 
 上一篇：[NAT 穿透专题](/blog/posts/how-nat-traversal-works/)
 
+下一篇：[Cookie 与 Session：网站是怎样记住你已经登录的？](/blog/posts/understanding-cookies-and-sessions/)
+
 回看：[打开网页时的网络全景](/blog/posts/what-happens-when-you-open-a-webpage/)
 
 [浏览完整网络专栏](/blog/series/计算机网络通识/)

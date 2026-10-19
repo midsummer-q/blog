@@ -1,0 +1,196 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="1200"
+  height="800"
+  viewBox="0 0 1200 800"
+  role="img"
+  aria-labelledby="title desc"
+>
+  <title id="title">Cookie 携带凭据，Session 保存会话</title>
+  <desc id="desc">
+    浏览器提交登录，服务器建立会话并通过 Set-Cookie 返回 ID。后续请求携带
+    Cookie，服务器查询会话。退出时撤销服务端记录并清除浏览器 Cookie。
+  </desc>
+  <defs>
+    <marker
+      id="blue"
+      markerWidth="10"
+      markerHeight="8"
+      refX="9"
+      refY="4"
+      orient="auto"
+    >
+      <path d="M0,0 L10,4 L0,8 Z" fill="#2868b2" />
+    </marker>
+    <marker
+      id="green"
+      markerWidth="10"
+      markerHeight="8"
+      refX="9"
+      refY="4"
+      orient="auto"
+    >
+      <path d="M0,0 L10,4 L0,8 Z" fill="#237967" />
+    </marker>
+  </defs>
+  <rect width="1200" height="800" rx="24" fill="#f5f7fb" />
+  <g font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif">
+    <text x="54" y="54" font-size="18" font-weight="700" fill="#2868b2">
+      计算机网络通识 / 21
+    </text>
+    <text x="54" y="103" font-size="34" font-weight="700" fill="#172c46">
+      Cookie 携带凭据，Session 保存会话
+    </text>
+    <text x="54" y="140" font-size="20" fill="#50657b">
+      每次请求都要重新检查：这个 ID 对应的会话，现在还有效吗？
+    </text>
+    <rect x="54" y="178" width="310" height="58" rx="12" fill="#e2edfc" />
+    <rect x="468" y="178" width="270" height="58" rx="12" fill="#e0f0ea" />
+    <rect x="842" y="178" width="304" height="58" rx="12" fill="#eae7f7" />
+    <text
+      x="209"
+      y="215"
+      font-size="23"
+      text-anchor="middle"
+      font-weight="700"
+      fill="#234e83"
+    >
+      浏览器
+    </text>
+    <text
+      x="603"
+      y="215"
+      font-size="23"
+      text-anchor="middle"
+      font-weight="700"
+      fill="#236653"
+    >
+      应用服务器
+    </text>
+    <text
+      x="994"
+      y="215"
+      font-size="23"
+      text-anchor="middle"
+      font-weight="700"
+      fill="#65518c"
+    >
+      会话存储
+    </text>
+    <path
+      d="M209 248V650 M603 248V650 M994 248V650"
+      stroke="#c7d1df"
+      stroke-width="2"
+      stroke-dasharray="6 7"
+    />
+    <text x="230" y="273" font-size="20" fill="#234e83">① 提交登录信息</text>
+    <path
+      d="M210 286H600"
+      stroke="#2868b2"
+      stroke-width="3"
+      marker-end="url(#blue)"
+    />
+    <text x="625" y="310" font-size="19" fill="#236653">
+      验证成功 → 建立新会话
+    </text>
+    <path
+      d="M604 324H990"
+      stroke="#237967"
+      stroke-width="3"
+      marker-end="url(#green)"
+    />
+    <rect
+      x="847"
+      y="340"
+      width="290"
+      height="74"
+      rx="10"
+      fill="#fff"
+      stroke="#d6cee8"
+    />
+    <text x="865" y="369" font-size="18" fill="#65518c">
+      随机 ID → 用户、有效期
+    </text>
+    <text x="865" y="398" font-size="17" fill="#50657b">
+      会话数据保存在服务端
+    </text>
+    <text x="230" y="355" font-size="20" fill="#236653">
+      ② Set-Cookie: sid=随机 ID
+    </text>
+    <path
+      d="M600 370H213"
+      stroke="#237967"
+      stroke-width="3"
+      marker-end="url(#green)"
+    />
+    <rect
+      x="62"
+      y="388"
+      width="294"
+      height="44"
+      rx="9"
+      fill="#fff"
+      stroke="#cadbef"
+    />
+    <text x="209" y="417" text-anchor="middle" font-size="18" fill="#234e83">
+      保存 Cookie 与发送规则
+    </text>
+    <text x="230" y="466" font-size="20" fill="#234e83">
+      ③ Cookie: sid=随机 ID
+    </text>
+    <path
+      d="M210 480H600"
+      stroke="#2868b2"
+      stroke-width="3"
+      marker-end="url(#blue)"
+    />
+    <text x="625" y="466" font-size="19" fill="#236653">
+      查找会话并检查是否有效
+    </text>
+    <path
+      d="M604 480H990"
+      stroke="#237967"
+      stroke-width="3"
+      marker-end="url(#green)"
+    />
+    <text x="230" y="525" font-size="19" fill="#236653">
+      有效：继续权限检查并返回结果
+    </text>
+    <path
+      d="M600 540H213"
+      stroke="#237967"
+      stroke-width="3"
+      marker-end="url(#green)"
+    />
+    <text x="230" y="584" font-size="20" fill="#234e83">④ POST /logout</text>
+    <path
+      d="M210 598H600"
+      stroke="#2868b2"
+      stroke-width="3"
+      marker-end="url(#blue)"
+    />
+    <text x="625" y="584" font-size="19" fill="#236653">撤销服务端会话</text>
+    <path
+      d="M604 598H990"
+      stroke="#237967"
+      stroke-width="3"
+      marker-end="url(#green)"
+    />
+    <text x="230" y="632" font-size="19" fill="#236653">
+      Set-Cookie: sid=; Max-Age=0; …
+    </text>
+    <path
+      d="M600 646H213"
+      stroke="#237967"
+      stroke-width="3"
+      marker-end="url(#green)"
+    />
+    <rect x="54" y="685" width="1092" height="65" rx="12" fill="#fff0d9" />
+    <text x="78" y="725" font-size="22" fill="#78571e">
+      Cookie 仍然存在 ≠ Session 仍然有效；删除 Cookie ≠ 已撤销服务端会话。
+    </text>
+    <text x="54" y="780" font-size="16" fill="#65788e">
+      midsummer-q · 原创教学示意 · 传统服务端 Session 方案
+    </text>
+  </g>
+</svg>
