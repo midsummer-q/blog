@@ -1,7 +1,7 @@
 ---
 author: midsummer-q
 pubDatetime: 2026-10-23T00:00:00Z
-title: C 语言宏讲透：从展开规则到 do while (0)，再到实用技巧
+title: C 语言宏详解：展开原理、常见陷阱与实用技巧
 featured: false
 draft: false
 tags:
