@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="780" viewBox="0 0 1200 780" role="img" aria-label="一份 C 源码经历哪些转换">
+<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8" fill="none" stroke="#52637b" stroke-width="1.5"/></marker></defs>
+<rect width="1200" height="780" rx="20" fill="#f5f7fb"/><g font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif">
+<text x="48" y="62" font-size="32" font-weight="700" fill="#172b4d">一份 C 源码经历哪些转换</text>
+<text x="48" y="105" font-size="21" fill="#52637b">选项表示让 GCC 在相应阶段停止；链接还会接收其他目标文件和库。</text>
+<rect x="48" y="160" width="220" height="125" rx="14" fill="white" stroke="#2563eb" stroke-width="2"/>
+<text x="68" y="198" font-size="25" fill="#2563eb" font-weight="700">hello.c</text>
+<text x="68" y="236" font-size="22" fill="#172b4d">C 源文件</text>
+<rect x="485" y="160" width="220" height="125" rx="14" fill="white" stroke="#2563eb" stroke-width="2"/>
+<text x="505" y="198" font-size="25" fill="#2563eb" font-weight="700">hello.i</text>
+<text x="505" y="236" font-size="22" fill="#172b4d">预处理后的 C</text>
+<rect x="922" y="160" width="230" height="125" rx="14" fill="white" stroke="#0f766e" stroke-width="2"/>
+<text x="942" y="198" font-size="25" fill="#0f766e" font-weight="700">hello.s</text>
+<text x="942" y="236" font-size="22" fill="#172b4d">汇编代码</text>
+<path d="M 268 220 L 485 220" fill="none" stroke="#52637b" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="310" y="198" font-size="22" fill="#52637b">预处理 -E</text>
+<path d="M 705 220 L 922 220" fill="none" stroke="#52637b" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="750" y="198" font-size="22" fill="#52637b">编译 -S</text>
+<rect x="922" y="410" width="230" height="125" rx="14" fill="white" stroke="#0f766e" stroke-width="2"/>
+<text x="942" y="448" font-size="25" fill="#0f766e" font-weight="700">hello.o</text>
+<text x="942" y="486" font-size="22" fill="#172b4d">可重定位目标</text>
+<path d="M 1037 285 L 1037 410" fill="none" stroke="#52637b" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="1055" y="352" font-size="22" fill="#52637b">汇编 -c</text>
+<rect x="485" y="410" width="220" height="125" rx="14" fill="white" stroke="#2563eb" stroke-width="2"/>
+<text x="505" y="448" font-size="25" fill="#2563eb" font-weight="700">链接</text>
+<text x="505" y="486" font-size="22" fill="#172b4d">解析符号与引用</text>
+<rect x="48" y="410" width="220" height="125" rx="14" fill="white" stroke="#2563eb" stroke-width="2"/>
+<text x="68" y="448" font-size="25" fill="#2563eb" font-weight="700">hello</text>
+<text x="68" y="486" font-size="22" fill="#172b4d">可执行程序</text>
+<path d="M 922 475 L 705 475" fill="none" stroke="#52637b" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M 485 475 L 268 475" fill="none" stroke="#52637b" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="485" y="625" width="667" height="90" rx="14" fill="white" stroke="#0f766e" stroke-width="2"/>
+<text x="505" y="663" font-size="25" fill="#0f766e" font-weight="700">其他 .o、库、启动代码</text>
+<path d="M 595 625 L 595 535" fill="none" stroke="#52637b" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="48" y="654" font-size="22" fill="#52637b">.o 中已有机器代码，</text>
+<text x="48" y="687" font-size="22" fill="#52637b">但仍可能有待解析的引用。</text>
+<text x="48" y="752" font-size="18" fill="#52637b">概念示意 · 一次 gcc 调用可以串起多个阶段；图中不是所有编译器的内部实现布局。</text>
+</g></svg>

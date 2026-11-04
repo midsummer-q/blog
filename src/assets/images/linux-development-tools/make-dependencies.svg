@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800" role="img" aria-label="Make 看见的是依赖图">
+<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8" fill="none" stroke="#52637b" stroke-width="1.5"/></marker></defs>
+<rect width="1200" height="800" rx="20" fill="#f5f7fb"/><g font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif">
+<text x="48" y="62" font-size="32" font-weight="700" fill="#172b4d">Make 看见的是依赖图</text>
+<text x="48" y="105" font-size="21" fill="#52637b">箭头统一表示“输入 → 产物”；目标是否过期取决于依赖和修改时间。</text>
+<rect x="48" y="160" width="280" height="115" rx="14" fill="white" stroke="#2563eb" stroke-width="2"/>
+<text x="68" y="198" font-size="25" fill="#2563eb" font-weight="700">main.c</text>
+<text x="68" y="236" font-size="22" fill="#172b4d">主程序实现</text>
+<rect x="460" y="160" width="280" height="115" rx="14" fill="white" stroke="#0f766e" stroke-width="2"/>
+<text x="480" y="198" font-size="25" fill="#0f766e" font-weight="700">progress.h</text>
+<text x="480" y="236" font-size="22" fill="#172b4d">两个源文件共同包含</text>
+<rect x="872" y="160" width="280" height="115" rx="14" fill="white" stroke="#2563eb" stroke-width="2"/>
+<text x="892" y="198" font-size="25" fill="#2563eb" font-weight="700">progress.c</text>
+<text x="892" y="236" font-size="22" fill="#172b4d">进度显示实现</text>
+<rect x="150" y="395" width="310" height="110" rx="14" fill="white" stroke="#2563eb" stroke-width="2"/>
+<text x="170" y="433" font-size="25" fill="#2563eb" font-weight="700">main.o</text>
+<text x="170" y="471" font-size="22" fill="#172b4d">由 main.c 编译得到</text>
+<rect x="740" y="395" width="310" height="110" rx="14" fill="white" stroke="#2563eb" stroke-width="2"/>
+<text x="760" y="433" font-size="25" fill="#2563eb" font-weight="700">progress.o</text>
+<text x="760" y="471" font-size="22" fill="#172b4d">由 progress.c 编译得到</text>
+<path d="M 188 275 L 188 340 L 250 340 L 250 395" fill="none" stroke="#52637b" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M 1012 275 L 1012 340 L 950 340 L 950 395" fill="none" stroke="#52637b" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M 535 275 L 535 330 L 365 330 L 365 395" fill="none" stroke="#52637b" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M 665 275 L 665 330 L 835 330 L 835 395" fill="none" stroke="#52637b" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="420" y="600" width="360" height="100" rx="14" fill="white" stroke="#0f766e" stroke-width="2"/>
+<text x="440" y="638" font-size="25" fill="#0f766e" font-weight="700">progress</text>
+<text x="440" y="676" font-size="22" fill="#172b4d">链接两个目标文件</text>
+<path d="M 305 505 L 305 650 L 420 650" fill="none" stroke="#52637b" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M 895 505 L 895 650 L 780 650" fill="none" stroke="#52637b" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="48" y="750" font-size="21" fill="#52637b">只改 main.c：重编 main.o 后链接；修改 progress.h：两个 .o 都需更新，再链接。</text>
+<text x="48" y="772" font-size="18" fill="#52637b">概念示意 · 头文件依赖必须写入规则，或由编译器生成的依赖文件提供。</text>
+</g></svg>
