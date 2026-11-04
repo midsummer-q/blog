@@ -26,4 +26,4 @@
 <text x="502" y="592" font-size="20" fill="#172b4d">保存路径：original.txt</text>
 <text x="502" y="624" font-size="20" fill="#172b4d">删除 original.txt 后，路径失效；hard.txt 仍可访问内容。</text>
 <path d="M 348 590 L 480 590" fill="none" stroke="#52637b" stroke-width="2.5" marker-end="url(#arrow)"/>
-<text x="48" y="724" font-size="16" fill="#64748b">基础 I/O · 根据课件与板书重绘的概念示意图</text></g></svg>
+<text x="48" y="724" font-size="16" fill="#64748b">基础 I/O · 概念示意图，非内核结构的完整布局</text></g></svg>

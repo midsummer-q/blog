@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="700" viewBox="0 0 1200 700" role="img" aria-label="CHS 如何展开为 LBA"><defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8" fill="none" stroke="#52637b" stroke-width="1.5"/></marker></defs><rect width="1200" height="700" rx="20" fill="#f5f7fb"/><g font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif">
+<text x="48" y="62" font-size="32" font-weight="700" fill="#172b4d">CHS 如何展开为 LBA</text>
+<text x="48" y="102" font-size="20" fill="#52637b">示例几何参数：每柱面 4 个磁头，每磁道 4 个扇区。</text>
+<rect x="48" y="145" width="460" height="100" rx="12" fill="white" stroke="#2563eb" stroke-width="2"/>
+<text x="66" y="179" font-size="22" fill="#2563eb">柱面 C = 0</text>
+<text x="66" y="212" font-size="20" fill="#172b4d">LBA 0 … 15</text>
+<rect x="620" y="145" width="530" height="100" rx="12" fill="white" stroke="#0f766e" stroke-width="2"/>
+<text x="638" y="179" font-size="22" fill="#0f766e">柱面 C = 1</text>
+<text x="638" y="212" font-size="20" fill="#172b4d">LBA 16 … 31</text>
+<path d="M 885 245 L 885 280 L 170 280 L 170 315" fill="none" stroke="#52637b" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="48" y="315" width="260" height="100" rx="12" fill="white" stroke="#0f766e" stroke-width="2"/>
+<text x="66" y="349" font-size="22" fill="#0f766e">磁头 H = 0</text>
+<text x="66" y="382" font-size="20" fill="#172b4d">LBA 16 … 19</text>
+<rect x="328" y="315" width="260" height="100" rx="12" fill="white" stroke="#2563eb" stroke-width="2"/>
+<text x="346" y="349" font-size="22" fill="#2563eb">磁头 H = 1</text>
+<text x="346" y="382" font-size="20" fill="#172b4d">LBA 20 … 23</text>
+<rect x="608" y="315" width="260" height="100" rx="12" fill="white" stroke="#2563eb" stroke-width="2"/>
+<text x="626" y="349" font-size="22" fill="#2563eb">磁头 H = 2</text>
+<text x="626" y="382" font-size="20" fill="#172b4d">LBA 24 … 27</text>
+<rect x="888" y="315" width="260" height="100" rx="12" fill="white" stroke="#2563eb" stroke-width="2"/>
+<text x="906" y="349" font-size="22" fill="#2563eb">磁头 H = 3</text>
+<text x="906" y="382" font-size="20" fill="#172b4d">LBA 28 … 31</text>
+<path d="M 178 415 L 178 445 L 670 445 L 670 480" fill="none" stroke="#52637b" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="48" y="480" width="260" height="90" rx="12" fill="white" stroke="#2563eb" stroke-width="2"/>
+<text x="66" y="514" font-size="22" fill="#2563eb">扇区 S = 1</text>
+<text x="66" y="547" font-size="20" fill="#172b4d">LBA = 16</text>
+<rect x="328" y="480" width="260" height="90" rx="12" fill="white" stroke="#2563eb" stroke-width="2"/>
+<text x="346" y="514" font-size="22" fill="#2563eb">扇区 S = 2</text>
+<text x="346" y="547" font-size="20" fill="#172b4d">LBA = 17</text>
+<rect x="608" y="480" width="260" height="90" rx="12" fill="white" stroke="#0f766e" stroke-width="2"/>
+<text x="626" y="514" font-size="22" fill="#0f766e">扇区 S = 3</text>
+<text x="626" y="547" font-size="20" fill="#172b4d">LBA = 18</text>
+<rect x="888" y="480" width="260" height="90" rx="12" fill="white" stroke="#2563eb" stroke-width="2"/>
+<text x="906" y="514" font-size="22" fill="#2563eb">扇区 S = 4</text>
+<text x="906" y="547" font-size="20" fill="#172b4d">LBA = 19</text>
+<text x="48" y="625" font-size="24" fill="#172b4d">(C × 4 + H) × 4 + (S − 1) = (1 × 4 + 0) × 4 + 2 = 18</text>
+<text x="48" y="672" font-size="16" fill="#64748b">Ext 文件系统 · 概念示意图，非设备或内核结构的完整布局</text>
+</g></svg>

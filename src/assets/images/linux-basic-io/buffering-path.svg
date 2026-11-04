@@ -23,4 +23,4 @@
 <text x="70" y="522" font-size="20" fill="#172b4d">printf 成功：输出可能仍在进程的标准库缓冲区。</text>
 <text x="70" y="554" font-size="20" fill="#172b4d">fflush 成功：该流待输出的用户态字节已提交给底层写入接口。</text>
 <text x="70" y="586" font-size="20" fill="#172b4d">fsync 成功：完成相应内核数据与元数据同步；它无法提交仍在 FILE 中的字节。</text>
-<text x="48" y="724" font-size="16" fill="#64748b">基础 I/O · 根据课件与板书重绘的概念示意图</text></g></svg>
+<text x="48" y="724" font-size="16" fill="#64748b">基础 I/O · 概念示意图，非内核结构的完整布局</text></g></svg>

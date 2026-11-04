@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="820" viewBox="0 0 1200 820" role="img" aria-label="VFS 把路径与打开状态连接起来"><defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8" fill="none" stroke="#52637b" stroke-width="1.5"/></marker></defs><rect width="1200" height="820" rx="20" fill="#f5f7fb"/><g font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif">
+<text x="48" y="62" font-size="32" font-weight="700" fill="#172b4d">VFS 把路径与打开状态连接起来</text>
+<text x="48" y="102" font-size="20" fill="#52637b">同一个文件对象可以有多个名字，也可以被多次独立打开。</text>
+<rect x="48" y="150" width="260" height="100" rx="12" fill="white" stroke="#2563eb" stroke-width="2"/>
+<text x="66" y="184" font-size="22" fill="#2563eb">task_struct</text>
+<text x="66" y="217" font-size="20" fill="#172b4d">进程相关状态</text>
+<rect x="430" y="150" width="290" height="100" rx="12" fill="white" stroke="#2563eb" stroke-width="2"/>
+<text x="448" y="184" font-size="22" fill="#2563eb">fs_struct</text>
+<text x="448" y="217" font-size="20" fill="#172b4d">根与当前工作目录</text>
+<rect x="850" y="150" width="300" height="100" rx="12" fill="white" stroke="#0f766e" stroke-width="2"/>
+<text x="868" y="184" font-size="22" fill="#0f766e">路径上下文</text>
+<text x="868" y="217" font-size="20" fill="#172b4d">挂载关系 + dentry</text>
+<path d="M 308 200 L 430 200" fill="none" stroke="#52637b" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M 720 200 L 850 200" fill="none" stroke="#52637b" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="48" y="350" width="260" height="120" rx="12" fill="white" stroke="#2563eb" stroke-width="2"/>
+<text x="66" y="384" font-size="22" fill="#2563eb">files_struct / fd 表</text>
+<text x="66" y="417" font-size="20" fill="#172b4d">描述符编号</text>
+<text x="66" y="447" font-size="20" fill="#172b4d">引用打开状态</text>
+<rect x="430" y="350" width="290" height="120" rx="12" fill="white" stroke="#2563eb" stroke-width="2"/>
+<text x="448" y="384" font-size="22" fill="#2563eb">struct file</text>
+<text x="448" y="417" font-size="20" fill="#172b4d">一次打开的偏移与标志</text>
+<text x="448" y="447" font-size="20" fill="#172b4d">通过路径关联对象</text>
+<rect x="850" y="350" width="300" height="120" rx="12" fill="white" stroke="#0f766e" stroke-width="2"/>
+<text x="868" y="384" font-size="22" fill="#0f766e">struct dentry</text>
+<text x="868" y="417" font-size="20" fill="#172b4d">名字与父节点</text>
+<text x="868" y="447" font-size="20" fill="#172b4d">关联目标 inode</text>
+<path d="M 178 250 L 178 350" fill="none" stroke="#52637b" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M 308 410 L 430 410" fill="none" stroke="#52637b" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M 720 410 L 850 410" fill="none" stroke="#52637b" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="48" y="570" width="260" height="115" rx="12" fill="white" stroke="#2563eb" stroke-width="2"/>
+<text x="66" y="604" font-size="22" fill="#2563eb">操作表</text>
+<text x="66" y="637" font-size="20" fill="#172b4d">按对象类型分派行为</text>
+<rect x="430" y="570" width="290" height="115" rx="12" fill="white" stroke="#2563eb" stroke-width="2"/>
+<text x="448" y="604" font-size="22" fill="#2563eb">struct super_block</text>
+<text x="448" y="637" font-size="20" fill="#172b4d">文件系统实例</text>
+<rect x="850" y="570" width="300" height="115" rx="12" fill="white" stroke="#0f766e" stroke-width="2"/>
+<text x="868" y="604" font-size="22" fill="#0f766e">struct inode</text>
+<text x="868" y="637" font-size="20" fill="#172b4d">文件对象与元数据</text>
+<path d="M 1000 470 L 1000 570" fill="none" stroke="#52637b" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M 850 627 L 720 627" fill="none" stroke="#52637b" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M 575 470 L 575 520 L 178 520 L 178 570" fill="none" stroke="#52637b" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="48" y="745" font-size="20" fill="#52637b">图中为主要关联关系；磁盘 inode / 超级块与内存中的 VFS 对象需要分别理解。</text>
+<text x="48" y="792" font-size="16" fill="#64748b">Ext 文件系统 · 概念示意图，非设备或内核结构的完整布局</text>
+</g></svg>

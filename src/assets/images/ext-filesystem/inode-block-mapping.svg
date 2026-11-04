@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="730" viewBox="0 0 1200 730" role="img" aria-label="15 个入口，逐级扩展内容映射"><defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8" fill="none" stroke="#52637b" stroke-width="1.5"/></marker></defs><rect width="1200" height="730" rx="20" fill="#f5f7fb"/><g font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif">
+<text x="48" y="62" font-size="32" font-weight="700" fill="#172b4d">15 个入口，逐级扩展内容映射</text>
+<text x="48" y="102" font-size="20" fill="#52637b">传统 ext2 模型：4 KiB 块、4 B 块号，每个索引块可保存 1024 项。</text>
+<rect x="48" y="160" width="210" height="90" rx="12" fill="white" stroke="#2563eb" stroke-width="2"/>
+<text x="66" y="194" font-size="22" fill="#2563eb">i_block[0 … 11]</text>
+<text x="66" y="227" font-size="20" fill="#172b4d">直接块</text>
+<rect x="1010" y="160" width="145" height="90" rx="12" fill="white" stroke="#0f766e" stroke-width="2"/>
+<text x="1028" y="194" font-size="22" fill="#0f766e">数据块</text>
+<text x="1028" y="227" font-size="20" fill="#172b4d">48 KiB</text>
+<path d="M 258 205 L 1010 205" fill="none" stroke="#52637b" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="48" y="280" width="210" height="90" rx="12" fill="white" stroke="#2563eb" stroke-width="2"/>
+<text x="66" y="314" font-size="22" fill="#2563eb">i_block[12]</text>
+<text x="66" y="347" font-size="20" fill="#172b4d">一级间接</text>
+<rect x="310" y="280" width="180" height="90" rx="12" fill="white" stroke="#2563eb" stroke-width="2"/>
+<text x="328" y="314" font-size="22" fill="#2563eb">索引块</text>
+<text x="328" y="347" font-size="20" fill="#172b4d">第 1 层</text>
+<path d="M 258 325 L 310 325" fill="none" stroke="#52637b" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="1010" y="280" width="145" height="90" rx="12" fill="white" stroke="#0f766e" stroke-width="2"/>
+<text x="1028" y="314" font-size="22" fill="#0f766e">数据块</text>
+<text x="1028" y="347" font-size="20" fill="#172b4d">4 MiB</text>
+<path d="M 490 325 L 1010 325" fill="none" stroke="#52637b" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="48" y="400" width="210" height="90" rx="12" fill="white" stroke="#2563eb" stroke-width="2"/>
+<text x="66" y="434" font-size="22" fill="#2563eb">i_block[13]</text>
+<text x="66" y="467" font-size="20" fill="#172b4d">二级间接</text>
+<rect x="310" y="400" width="180" height="90" rx="12" fill="white" stroke="#2563eb" stroke-width="2"/>
+<text x="328" y="434" font-size="22" fill="#2563eb">索引块</text>
+<text x="328" y="467" font-size="20" fill="#172b4d">第 1 层</text>
+<path d="M 258 445 L 310 445" fill="none" stroke="#52637b" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="540" y="400" width="180" height="90" rx="12" fill="white" stroke="#2563eb" stroke-width="2"/>
+<text x="558" y="434" font-size="22" fill="#2563eb">索引块</text>
+<text x="558" y="467" font-size="20" fill="#172b4d">第 2 层</text>
+<path d="M 490 445 L 540 445" fill="none" stroke="#52637b" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="1010" y="400" width="145" height="90" rx="12" fill="white" stroke="#0f766e" stroke-width="2"/>
+<text x="1028" y="434" font-size="22" fill="#0f766e">数据块</text>
+<text x="1028" y="467" font-size="20" fill="#172b4d">4 GiB</text>
+<path d="M 720 445 L 1010 445" fill="none" stroke="#52637b" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="48" y="520" width="210" height="90" rx="12" fill="white" stroke="#2563eb" stroke-width="2"/>
+<text x="66" y="554" font-size="22" fill="#2563eb">i_block[14]</text>
+<text x="66" y="587" font-size="20" fill="#172b4d">三级间接</text>
+<rect x="310" y="520" width="180" height="90" rx="12" fill="white" stroke="#2563eb" stroke-width="2"/>
+<text x="328" y="554" font-size="22" fill="#2563eb">索引块</text>
+<text x="328" y="587" font-size="20" fill="#172b4d">第 1 层</text>
+<path d="M 258 565 L 310 565" fill="none" stroke="#52637b" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="540" y="520" width="180" height="90" rx="12" fill="white" stroke="#2563eb" stroke-width="2"/>
+<text x="558" y="554" font-size="22" fill="#2563eb">索引块</text>
+<text x="558" y="587" font-size="20" fill="#172b4d">第 2 层</text>
+<path d="M 490 565 L 540 565" fill="none" stroke="#52637b" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="770" y="520" width="180" height="90" rx="12" fill="white" stroke="#2563eb" stroke-width="2"/>
+<text x="788" y="554" font-size="22" fill="#2563eb">索引块</text>
+<text x="788" y="587" font-size="20" fill="#172b4d">第 3 层</text>
+<path d="M 720 565 L 770 565" fill="none" stroke="#52637b" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="1010" y="520" width="145" height="90" rx="12" fill="white" stroke="#0f766e" stroke-width="2"/>
+<text x="1028" y="554" font-size="22" fill="#0f766e">数据块</text>
+<text x="1028" y="587" font-size="20" fill="#172b4d">4 TiB</text>
+<path d="M 950 565 L 1010 565" fill="none" stroke="#52637b" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="48" y="656" font-size="20" fill="#52637b">图中每级只画一条查找路径；右侧容量表示该整条分支的理论覆盖量。</text>
+<text x="48" y="702" font-size="16" fill="#64748b">Ext 文件系统 · 概念示意图，非设备或内核结构的完整布局</text>
+</g></svg>

@@ -24,4 +24,4 @@
 <text x="52" y="550" font-size="20" fill="#52637b">dup 得到的两个 fd：共享同一份打开状态，因此也共享偏移量。</text>
 <text x="52" y="582" font-size="20" fill="#52637b">同一文件两次 open：通常产生两份打开状态，但可以关联同一个 inode。</text>
 <text x="52" y="614" font-size="20" fill="#52637b">fd 是进程内的访问编号；inode 号需要结合所属文件系统理解。</text>
-<text x="48" y="724" font-size="16" fill="#64748b">基础 I/O · 根据课件与板书重绘的概念示意图</text></g></svg>
+<text x="48" y="724" font-size="16" fill="#64748b">基础 I/O · 概念示意图，非内核结构的完整布局</text></g></svg>

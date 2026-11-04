@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760" role="img" aria-label="块组：位置、分配状态与对象记录"><defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8" fill="none" stroke="#52637b" stroke-width="1.5"/></marker></defs><rect width="1200" height="760" rx="20" fill="#f5f7fb"/><g font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif">
+<text x="48" y="62" font-size="32" font-weight="700" fill="#172b4d">块组：位置、分配状态与对象记录</text>
+<text x="48" y="102" font-size="20" fill="#52637b">传统 Ext 布局的职责划分；实际位置应读取组描述符。</text>
+<rect x="48" y="145" width="1100" height="90" rx="12" fill="white" stroke="#2563eb" stroke-width="2"/>
+<text x="66" y="179" font-size="22" fill="#2563eb">块设备 → 分区或其他承载范围 → Ext 文件系统</text>
+<text x="66" y="212" font-size="20" fill="#172b4d">文件系统内部继续划分为块组 0、块组 1、……</text>
+<rect x="48" y="285" width="330" height="140" rx="12" fill="white" stroke="#2563eb" stroke-width="2"/>
+<text x="66" y="319" font-size="22" fill="#2563eb">超级块</text>
+<text x="66" y="352" font-size="20" fill="#172b4d">整个文件系统的配置</text>
+<text x="66" y="382" font-size="20" fill="#172b4d">规模、块大小、功能特性</text>
+<rect x="435" y="285" width="330" height="140" rx="12" fill="white" stroke="#2563eb" stroke-width="2"/>
+<text x="453" y="319" font-size="22" fill="#2563eb">块组描述符表 GDT</text>
+<text x="453" y="352" font-size="20" fill="#172b4d">每组结构的位置与计数</text>
+<text x="453" y="382" font-size="20" fill="#172b4d">定位位图和 inode 表</text>
+<rect x="822" y="285" width="326" height="140" rx="12" fill="white" stroke="#0f766e" stroke-width="2"/>
+<text x="840" y="319" font-size="22" fill="#0f766e">块组 n</text>
+<text x="840" y="352" font-size="20" fill="#172b4d">管理信息 + 可分配块</text>
+<text x="840" y="382" font-size="20" fill="#172b4d">相关对象尽量保持局部性</text>
+<path d="M 378 355 L 435 355" fill="none" stroke="#52637b" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M 765 355 L 822 355" fill="none" stroke="#52637b" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="48" y="500" width="260" height="115" rx="12" fill="white" stroke="#0f766e" stroke-width="2"/>
+<text x="66" y="534" font-size="22" fill="#0f766e">块位图</text>
+<text x="66" y="567" font-size="20" fill="#172b4d">哪些块已被使用</text>
+<rect x="328" y="500" width="260" height="115" rx="12" fill="white" stroke="#0f766e" stroke-width="2"/>
+<text x="346" y="534" font-size="22" fill="#0f766e">inode 位图</text>
+<text x="346" y="567" font-size="20" fill="#172b4d">哪些记录已分配</text>
+<rect x="608" y="500" width="260" height="115" rx="12" fill="white" stroke="#0f766e" stroke-width="2"/>
+<text x="626" y="534" font-size="22" fill="#0f766e">inode 表</text>
+<text x="626" y="567" font-size="20" fill="#172b4d">每个对象的元数据</text>
+<rect x="888" y="500" width="260" height="115" rx="12" fill="white" stroke="#0f766e" stroke-width="2"/>
+<text x="906" y="534" font-size="22" fill="#0f766e">分配的块</text>
+<text x="906" y="567" font-size="20" fill="#172b4d">内容、目录项或索引</text>
+<path d="M 985 425 L 985 460 L 738 460 L 738 500" fill="none" stroke="#52637b" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="48" y="675" font-size="20" fill="#52637b">超级块与 GDT 的副本分布、各结构位置受功能特性影响，并非每组都完全相同。</text>
+<text x="48" y="732" font-size="16" fill="#64748b">Ext 文件系统 · 概念示意图，非设备或内核结构的完整布局</text>
+</g></svg>
