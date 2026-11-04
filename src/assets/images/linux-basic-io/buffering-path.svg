@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760" role="img" aria-label="一次普通文件写入，经过哪些缓冲？"><defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8" fill="none" stroke="#52637b" stroke-width="1.5"/></marker></defs><rect width="1200" height="760" rx="20" fill="#f5f7fb"/><g font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif">
+<text x="48" y="65" font-size="32" font-weight="700" fill="#172b4d">一次普通文件写入，经过哪些缓冲？</text>
+<text x="48" y="104" font-size="19" fill="#52637b">范围：Linux 上常见的标准 I/O + 普通文件缓冲写入。</text>
+<rect x="48" y="175" width="330" height="215" rx="14" fill="white" stroke="#2563eb" stroke-width="2"/>
+<text x="70" y="214" font-size="23" font-weight="700" fill="#2563eb">用户空间 · C 标准库</text>
+<text x="70" y="252" font-size="20" fill="#172b4d">printf / fwrite</text>
+<text x="70" y="284" font-size="20" fill="#172b4d">FILE 管理的输出缓冲区</text>
+<text x="70" y="316" font-size="20" fill="#172b4d">fflush：提交待输出字节</text>
+<rect x="438" y="175" width="330" height="215" rx="14" fill="white" stroke="#0f766e" stroke-width="2"/>
+<text x="460" y="214" font-size="23" font-weight="700" fill="#0f766e">内核空间</text>
+<text x="460" y="252" font-size="20" fill="#172b4d">write 接受字节</text>
+<text x="460" y="284" font-size="20" fill="#172b4d">页缓存中的脏数据</text>
+<text x="460" y="316" font-size="20" fill="#172b4d">内核安排回写</text>
+<rect x="828" y="175" width="324" height="215" rx="14" fill="white" stroke="#2563eb" stroke-width="2"/>
+<text x="850" y="214" font-size="23" font-weight="700" fill="#2563eb">存储设备</text>
+<text x="850" y="252" font-size="20" fill="#172b4d">文件数据与元数据</text>
+<text x="850" y="284" font-size="20" fill="#172b4d">设备处理写入与同步</text>
+<text x="850" y="316" font-size="20" fill="#172b4d">fsync：请求并等待同步</text>
+<path d="M 378 280 L 438 280" fill="none" stroke="#52637b" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M 768 280 L 828 280" fill="none" stroke="#52637b" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="48" y="445" width="1104" height="190" rx="14" fill="white" stroke="#0f766e" stroke-width="2"/>
+<text x="70" y="484" font-size="23" font-weight="700" fill="#0f766e">三个不同的完成位置</text>
+<text x="70" y="522" font-size="20" fill="#172b4d">printf 成功：输出可能仍在进程的标准库缓冲区。</text>
+<text x="70" y="554" font-size="20" fill="#172b4d">fflush 成功：该流待输出的用户态字节已提交给底层写入接口。</text>
+<text x="70" y="586" font-size="20" fill="#172b4d">fsync 成功：完成相应内核数据与元数据同步；它无法提交仍在 FILE 中的字节。</text>
+<text x="48" y="724" font-size="16" fill="#64748b">基础 I/O · 根据课件与板书重绘的概念示意图</text></g></svg>
