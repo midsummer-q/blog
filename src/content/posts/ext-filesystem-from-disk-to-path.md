@@ -11,7 +11,7 @@ tags:
   - 操作系统
 series:
   name: Linux
-  order: 3
+  order: 4
 description: 从一次文件访问出发，理解磁盘寻址、Ext 块组与 inode 如何组织数据，路径解析与挂载怎样连接目录树，以及软硬链接、文件删除和时间戳背后的机制。
 ---
 
