@@ -9,14 +9,14 @@ tags:
   - 开发工具
   - 编译与链接
   - 版本控制
-description: 从搭建环境到维护一个多文件 C 项目，串起软件包管理、Vim、GCC/G++、Makefile、终端进度条、Git 与 GDB，理解每个工具负责什么，以及它们怎样协作。
+description: 从搭建环境到维护一个多文件 C 项目，串起软件包管理、Vim、GCC/G++、Makefile、Git 与 GDB，理解每个工具负责什么，以及它们怎样协作。
 ---
 
 在 IDE 里点击一次“运行”，编辑器、编译器、构建工具和调试器往往已经替我们完成了一串工作。换到 Linux 终端后，这些角色变成了不同的命令：文件由 Vim 修改，源码交给 GCC，依赖关系写进 Makefile，问题用 GDB 定位，改动则进入 Git 历史。
 
 最初的不适应，通常不是少了几个按钮，而是原本被界面隐藏的边界显露出来了：工具没安装与代码编译失败不是一回事，编译成功与链接成功不是一回事，本地提交与推送到 GitHub 也不是一回事。
 
-接下来沿着一个小型 C 项目的生命周期展开：先准备环境，再编辑和构建，用一个终端进度条连接多文件协作，最后讨论版本管理与调试。每个工具都有独立职责，理解这些职责之间的连接，比孤立记住命令更有用。
+以一个小型 C 项目为例，从准备开发环境和编辑源码开始，逐步了解多文件构建、版本管理与调试。
 
 ![包管理准备环境，Vim 编辑源码，Make 调用 GCC/G++ 构建，GDB 调试，Git 记录与协作](../../assets/images/linux-development-tools/toolchain-overview.svg)
 
@@ -210,7 +210,7 @@ c3w     更改三个单词对应的范围
 
 `%` 表示整个文件，`g` 表示处理同一行内的多个匹配，`c` 要求逐次确认，`\<` 与 `\>` 限定单词边界。这仍然是文本替换，不是理解 C 作用域的语义重命名工具。
 
-多文件项目不必每次退出再打开。`:edit progress.c` 切换文件，`:split` 或 `:vsplit` 分屏，`Ctrl-w w` 在窗口间切换。编辑过程中可以用 `:set number` 显示行号，`:nohlsearch` 暂时清除搜索高亮。更完整的入门说明见 [Vim 用户手册](https://vimhelp.org/usr_02.txt.html)，本机也可以使用 `vimtutor`。
+多文件项目不必每次退出再打开。`:edit calc.c` 切换文件，`:split` 或 `:vsplit` 分屏，`Ctrl-w w` 在窗口间切换。编辑过程中可以用 `:set number` 显示行号，`:nohlsearch` 暂时清除搜索高亮。更完整的入门说明见 [Vim 用户手册](https://vimhelp.org/usr_02.txt.html)，本机也可以使用 `vimtutor`。
 
 ### 配置应当解释得清，而不是一次装满插件
 
@@ -396,17 +396,17 @@ hello ← hello.o ← hello.s ← hello.i ← hello.c
 
 Make 会先处理最终目标的前置依赖，再逐层执行必要配方。实际项目通常不把 `.i` 和 `.s` 长期保留，而是直接从每个 `.c` 得到对应 `.o`。
 
-对于接下来的进度条项目，`main.c` 与 `progress.c` 都包含 `progress.h`，关系就不再是一条链：
+假设一个计算程序由两个源文件组成。`main.c` 调用计算函数，`calc.c` 提供实现，两者都包含声明接口的 `calc.h`。
 
-![main.c 与 progress.c 分别生成目标文件，二者都依赖 progress.h，最后链接成 progress](../../assets/images/linux-development-tools/make-dependencies.svg)
+![main.c 与 calc.c 分别生成目标文件，二者都依赖 calc.h，最后链接成 calc-demo](../../assets/images/linux-development-tools/make-dependencies.svg)
 
-只修改 `progress.c`，通常只需重建 `progress.o` 并重新链接；修改 `progress.h`，则可能需要重建两个目标文件。这种区别来自明确的依赖关系，不是 Make 能自己理解所有 C 代码。
+只修改 `calc.c`，通常只需重建 `calc.o` 并重新链接；修改 `calc.h`，则可能需要重建两个目标文件。这种区别来自明确的依赖关系，不是 Make 能自己理解所有 C 代码。
 
 若缺少一个依赖文件，而且没有任何规则能生成它，构建会失败。配方命令返回非零退出码时，Make 默认也会报告失败并停止相应构建；使用 `-k` 可以尝试继续处理不受影响的目标。Make 不检查 C 语法，但它会根据编译器的退出状态判断命令是否成功。
 
 ### 一个适合小型多文件项目的 Makefile
 
-下面的版本对应后文的 `main.c`、`progress.c`、`progress.h`。配方行仍然以真实 Tab 开头：
+下面的 Makefile 把这两个源文件分别编译为目标文件，再链接成 `calc-demo`。每条配方都以一个 Tab 开头。
 
 ```makefile
 .DEFAULT_GOAL := all
@@ -417,8 +417,8 @@ CFLAGS := -std=c17 -Wall -Wextra -Wpedantic -g -Og
 LDFLAGS :=
 LDLIBS :=
 
-BIN := progress
-SRC := main.c progress.c
+BIN := calc-demo
+SRC := main.c calc.c
 OBJ := $(SRC:.c=.o)
 DEP := $(OBJ:.o=.d)
 
@@ -443,185 +443,23 @@ clean:
 
 配方中的三个自动变量与当前规则绑定：
 
-| 变量 | 含义                     | 在这里对应什么                       |
-| ---- | ------------------------ | ------------------------------------ |
-| `$@` | 当前目标                 | 链接时为 progress，编译时为对应 `.o` |
-| `$^` | 去重后的正常前置依赖列表 | 链接时为两个目标文件                 |
-| `$<` | 第一个前置依赖           | 编译时为对应的 `.c`                  |
+| 变量 | 含义                     | 在这里对应什么                        |
+| ---- | ------------------------ | ------------------------------------- |
+| `$@` | 当前目标                 | 链接时为 calc-demo，编译时为对应 `.o` |
+| `$^` | 去重后的正常前置依赖列表 | 链接时为两个目标文件                  |
+| `$<` | 第一个前置依赖           | 编译时为对应的 `.c`                   |
 
-`%.o: %.c` 是模式规则，`%` 匹配同一个主干，如 `progress`；它不是 Shell 的 `*` 通配符，也不是简单地“先展开全部 .c”。配方前加 `@` 可以隐藏命令本身的回显，但不会压制命令的标准输出或错误输出。`$(RM)` 通常来自 GNU make 的内建变量，值常为 `rm -f`，也可以明确覆盖。
+`%.o: %.c` 是模式规则，`%` 匹配同一个主干，如 `calc`；它不是 Shell 的 `*` 通配符，也不是简单地“先展开全部 .c”。配方前加 `@` 可以隐藏命令本身的回显，但不会压制命令的标准输出或错误输出。`$(RM)` 通常来自 GNU make 的内建变量，值常为 `rm -f`，也可以明确覆盖。
 
-`-MMD -MP` 让 GCC 在编译时同时生成描述头文件依赖的 `.d` 文件，`-include` 把它们读回 Makefile，并允许初次构建时这些文件还不存在。这样，修改 `progress.h` 才能触发相关目标的重建；单写 `%.o: %.c` 本身无法完整记录头文件关系。详细规则见 [GNU make 手册](https://www.gnu.org/software/make/manual/make.html)。
+`-MMD -MP` 让 GCC 在编译时同时生成描述头文件依赖的 `.d` 文件，`-include` 把它们读回 Makefile，并允许初次构建时这些文件还不存在。这样，修改 `calc.h` 才能触发相关目标的重建；单写 `%.o: %.c` 本身无法完整记录头文件关系。详细规则见 [GNU make 手册](https://www.gnu.org/software/make/manual/make.html)。
 
 最后还要注意两个工程边界。第一，改了 `CFLAGS` 等配方内容，不一定会让旧 `.o` 自动过期；切换调试与发布配置时应清理重建，或把不同配置放进不同输出目录。第二，`make -j4` 可以并行执行独立任务，但依赖写错时，并行构建只会更快暴露问题。`make -n` 可用于查看计划执行的配方，不能把它理解成任意 Makefile 都绝不会产生副作用的沙箱。
 
 每条配方行通常运行在独立 Shell 中，因此把 `cd subdir` 与下一行命令分开写，未必能改变下一行的工作目录；需要时写在同一行，如 `cd subdir && command`。这类行为属于构建工具与 Shell 的边界，不是编译器的问题。
 
-## 用进度条把编辑、编译与构建连接起来
-
-一个终端进度条看起来只是不断更新百分比，却能把文件组织、接口设计和输出缓冲同时展示出来。它还有一个常见现象：程序明明执行了 `printf`，屏幕却迟迟没有变化。
-
-### 回车控制位置，刷新决定何时可见
-
-在常见终端中，`\r` 把光标移回当前行行首，`\n` 用于换行。这两个控制字符来自机械打字设备中“把打印头移回去”和“把纸向前送一行”的不同动作。今天文本文件中的 LF、CRLF 约定，以及终端对控制字符的处理，也要与这个历史背景分开理解。
-
-只回到行首不会擦除旧内容。如果前一帧输出 `100`，后一帧只覆盖 `9`，尾部的字符可能留下。因此倒计时可以使用固定宽度：
-
-```c
-#include <stdio.h>
-#include <unistd.h>
-
-int main(void) {
-    for (int remaining = 10; remaining >= 0; --remaining) {
-        if (printf("\r%-2d", remaining) < 0 || fflush(stdout) == EOF) {
-            return 1;
-        }
-        if (remaining > 0) {
-            sleep(1);
-        }
-    }
-    return putchar('\n') == EOF ? 1 : 0;
-}
-```
-
-`%-2d` 用至少两个字符的宽度左对齐，较短的数字后面补空格，从而覆盖前一帧的尾部；`\r` 让每帧从同一位置开始。
-
-标准输出连接终端时通常行缓冲，所以带换行的输出常立即可见，不带换行的输出则可能留在标准库缓冲区。`sleep` 只让程序等待，不负责刷新。`fflush(stdout)` 提交的是标准库待输出数据，而非保证磁盘持久化。输出重定向到文件后，缓冲策略又可能变化，不能把终端表现当作所有输出场景的保证。两层缓冲的区别可参见[《Linux 基础 I/O》](/blog/posts/linux-basic-io/)。
-
-### 把“推进任务”与“画出状态”拆开
-
-最直接的进度条写法是在一个函数里循环 0 到 100：每次填充一个字符、打印百分比、轮换 `|/-\`，再等待片刻。它适合展示效果，但真实任务不一定匀速，显示函数也不应该决定业务推进速度。
-
-更合适的接口是让调用方传入“已完成量、总量和动画帧号”。显示函数只负责把状态转成文字，不在内部等待，也不自行假装下载了数据。下面使用三个文件，项目结构为：
-
-```text
-progress/
-├── main.c
-├── progress.c
-├── progress.h
-└── Makefile
-```
-
-`progress.h` 只提供接口：
-
-```c
-#ifndef APP_PROGRESS_H
-#define APP_PROGRESS_H
-
-#include <stddef.h>
-
-int progress_draw(size_t current, size_t total, unsigned frame);
-
-#endif
-```
-
-头文件保护避免同一翻译单元重复处理头文件中的内容。`#pragma once` 也是常见方案，但它不是 ISO C 标准指令；这里采用宏保护，便于明确接口的可移植边界。
-
-`progress.c` 负责格式化与刷新：
-
-```c
-#include "progress.h"
-
-#include <stdio.h>
-#include <string.h>
-
-enum { BAR_WIDTH = 40 };
-
-int progress_draw(size_t current, size_t total, unsigned frame) {
-    if (total == 0) {
-        return -1;
-    }
-    if (current > total) {
-        current = total;
-    }
-
-    double ratio = (double)current / (double)total;
-    size_t filled = (size_t)(ratio * BAR_WIDTH);
-    if (filled > BAR_WIDTH) {
-        filled = BAR_WIDTH;
-    }
-
-    char bar[BAR_WIDTH + 1];
-    memset(bar, ' ', BAR_WIDTH);
-    memset(bar, '=', filled);
-    bar[BAR_WIDTH] = '\0';
-
-    const char spinner[] = "|/-\\";
-    if (printf("\r[%s] %6.2f%% %c", bar, ratio * 100.0,
-               spinner[frame % 4]) < 0) {
-        return -1;
-    }
-    return fflush(stdout) == EOF ? -1 : 0;
-}
-```
-
-`BAR_WIDTH + 1` 为字符串结束符保留空间；每次先填满空格，再写入完成部分，因此不会留下上一帧的旧尾巴。`%%` 输出一个百分号，`frame % 4` 则让旋转指示符在四个字符间循环。
-
-这里用 `size_t` 表示非负整数任务量，接口不接受 NaN 这类浮点状态；但它不会自动拒绝负整数，负值转换成无符号类型后可能变成很大的正数，调用方须先验证有符号输入。`total == 0` 被明确作为错误处理。如果业务中的总量未知，更合理的是仅显示旋转指示符和已完成量，而不是伪造百分比。若另一个接口用 `double` 接收已完成量，还需检查值是否有限、总量是否大于零，并对比例做边界处理。
-
-`main.c` 用间隔推进演示调用方式：
-
-```c
-#define _POSIX_C_SOURCE 200809L
-
-#include "progress.h"
-
-#include <errno.h>
-#include <stdio.h>
-#include <time.h>
-
-static int pause_frame(void) {
-    struct timespec delay = { .tv_sec = 0, .tv_nsec = 50000000L };
-    while (nanosleep(&delay, &delay) < 0) {
-        if (errno != EINTR) {
-            return -1;
-        }
-    }
-    return 0;
-}
-
-int main(void) {
-    const size_t total = 1000;
-    const size_t step = 37;
-
-    for (unsigned task = 0; task < 3; ++task) {
-        size_t current = 0;
-        unsigned frame = 0;
-
-        for (;;) {
-            if (progress_draw(current, total, frame++) < 0) {
-                fputs("cannot render progress\n", stderr);
-                return 1;
-            }
-            if (current == total) {
-                break;
-            }
-            if (pause_frame() < 0) {
-                perror("nanosleep");
-                return 1;
-            }
-            current += total - current < step ? total - current : step;
-        }
-
-        if (putchar('\n') == EOF || fflush(stdout) == EOF) {
-            return 1;
-        }
-    }
-    return 0;
-}
-```
-
-这段程序只模拟任务推进，不进行网络下载。业务层每次增加完成量，显示层只消费当前状态；每个新任务重置自己的帧号，也避免了把静态计数器藏在显示函数中造成的隐式共享。
-
-一些旧代码用 `usleep` 暂停微秒数量级的时间；这里采用 POSIX `nanosleep`，并在信号中断时继续等待剩余时间。它仍不是精确定时器：调度和负载会影响实际恢复时刻。延时只是让动画便于观察，真实任务应该由实际完成量驱动显示。
-
-配合上一节的 Makefile，入口就是 `make` 和 `./progress`。程序能否编译、链接，和程序是否正确表达真实进度是不同问题；这一版接口把两者需要的职责先分清了。
-
-如果输出不是交互终端，反复写 `\r` 往往只会让日志难读。更完整的工具会用 `isatty` 判断输出目标，在终端上显示动画，在文件或流水线中改成定期输出完整状态行。到这一步，进度条已经从字符串拼接变成了一个小型输出组件。
-
 ## 用 Git 记录“为什么改”，而不只是保存一份文件
 
-当进度条第一次能够刷新时，复制一份 `progress-v1` 似乎就够了。但后来加入百分比、修复边界、调整刷新频率，每次都复制目录，很快就会分不清哪个版本包含哪项修改，更难把两个人的工作合在一起。
+如果昨天的版本能算对，而今天的版本给出了错误结果，该从哪里查起？在 Git 中，可以直接比较两次提交，看计算函数和构建配置分别改过哪些行。
 
 Git 把版本管理变成一段可查询的历史：每次提交记录一组相关修改，并通过父提交连接前后状态。Linux 内核项目从 2002 年开始使用 BitKeeper，2005 年免费使用关系终止，推动 Linus Torvalds 等开发者构建自己的版本管理工具。Git 由此诞生，设计目标包含速度、分支协作和分布式工作。更详细的背景可以阅读 [Pro Git 的 Git 简史](https://git-scm.com/book/en/v2/Getting-Started-A-Short-History-of-Git)。
 
@@ -656,7 +494,7 @@ git diff --staged
 
 第一条查看工作区相对暂存区的变化，第二条查看暂存区相对当前提交的变化。`git status` 则把已暂存、未暂存和未跟踪文件集中列出来。提交前看一眼这三种状态，比提交后再找误带进去的文件省事得多。
 
-### 给 progress 项目建立第一份历史
+### 为计算程序创建首次提交
 
 如果已有本地项目，可以在项目根目录初始化仓库。下面采用 `main` 作为分支名：
 
@@ -672,7 +510,7 @@ git config user.email "you@example.com"
 
 ```text
 /build/
-/progress
+/calc-demo
 *.o
 *.d
 *.swp
@@ -686,19 +524,19 @@ git config user.email "you@example.com"
 
 ```bash
 git status
-git add main.c progress.c progress.h Makefile .gitignore
+git add main.c calc.c calc.h Makefile .gitignore
 git diff --staged
-git commit -m "Add terminal progress display"
+git commit -m "Add calculation module and build rules"
 git log --oneline --decorate -5
 ```
 
-明确列出文件，可以避免把临时日志或无关改动顺手提交。较大的文件也可以用 `git add -p` 按修改块选择内容。一次提交最好回答一个具体问题，例如“修复进度达到 100% 时的边界处理”，而不是把几天里所有不相关的修改混成一个“update”。
+明确列出文件，可以避免把临时日志或无关改动顺手提交。较大的文件也可以用 `git add -p` 按修改块选择内容。一次提交最好回答一个具体问题，例如“修复空输入的计算结果”，而不是把几天里所有不相关的修改混成一个“update”。
 
 如果项目已经在 GitHub 上，则通常直接克隆，不需要再初始化一遍：
 
 ```bash
-git clone https://github.com/YOUR_NAME/progress.git
-cd progress
+git clone https://github.com/YOUR_NAME/calc-demo.git
+cd calc-demo
 ```
 
 克隆后一般已经配置了名为 `origin` 的远程地址。`git remote -v` 可以查看它；`origin` 只是约定名称，并不表示 Git 自带一个固定服务器。
@@ -710,7 +548,7 @@ cd progress
 对尚未配置远程的本地仓库：
 
 ```bash
-git remote add origin https://github.com/YOUR_NAME/progress.git
+git remote add origin https://github.com/YOUR_NAME/calc-demo.git
 git push -u origin main
 ```
 
@@ -729,10 +567,10 @@ git pull --ff-only
 
 ### 分支让修改相互独立，冲突则需要理解代码
 
-给进度条添加新功能时，可以先建立分支：
+要给计算程序增加输入检查，可以先建立一个分支。
 
 ```bash
-git switch -c feature/progress-style
+git switch -c feature/input-validation
 ```
 
 分支并不是把整个项目重新复制一份，而是让一条开发历史有自己的名称。功能完成后，可以通过拉取请求讨论和合并；在本地合并时，也应先弄清楚当前分支与目标分支的关系。
@@ -743,17 +581,17 @@ git switch -c feature/progress-style
 
 ## 用 GDB 把“猜错在哪里”变成“观察状态如何变化”
 
-编译成功只能说明程序通过了相应的语法、类型和链接检查，不保证业务结果正确。进度条停在错误的百分比时，问题可能在总量、累计值、取整或输出条件上。继续添加打印有时有效，但当循环很长、调用层次很多时，调试器能让程序停在真正值得观察的位置。
+从 1 加到 100，预期结果是 5050，程序却输出了 0。用 GDB 在求和函数返回前停住，查看累加值和返回表达式，就能判断错误发生在循环里还是返回时。
 
 GDB 的核心不是记住尽可能多的命令，而是建立一个循环：选定停止条件，查看此刻的变量和调用关系，再向前执行一小段，检查状态是否符合预期。
 
 ### 调试信息和优化是两条独立的配置轴
 
-要让 GDB 把机器指令关联到源码行、局部变量和类型，编译时通常加入 `-g`：
+要让 GDB 把机器指令关联到源码行、局部变量和类型，编译时通常加入 `-g`。以下命令使用下一节的 `sum-debug.c`。
 
 ```bash
-gcc -std=c17 -Wall -Wextra -g -Og main.c progress.c -o progress
-gdb ./progress
+gcc -std=c17 -Wall -Wextra -g -Og sum-debug.c -o sum-debug
+gdb ./sum-debug
 ```
 
 `-g` 生成调试信息，`-Og` 选择适合调试的优化组合。想更直接地观察简单示例的源码执行，也可以使用 `-O0`。发布构建可能使用 `-O2`，同时保留调试信息供问题定位，因此不能把两者简化成“有 `-g` 就是 debug，没有就是 release”。
@@ -883,11 +721,11 @@ gdb ./sum-debug
 
 ### 在终端里同时看到源码：CGDB 与 GDB TUI
 
-CGDB 在 GDB 之上提供源码窗口，让断点和当前位置更直观。安装方式取决于发行版与启用的仓库，例如 Ubuntu 可安装 `cgdb` 包，RPM 系发行版需要先确认相应仓库是否提供它；启动方式是 `cgdb ./progress`。
+CGDB 在 GDB 之上提供源码窗口，让断点和当前位置更直观。安装方式取决于发行版与启用的仓库，例如 Ubuntu 可安装 `cgdb` 包，RPM 系发行版需要先确认相应仓库是否提供它；启动方式是 `cgdb ./sum-debug`。
 
 默认情况下，`Esc` 把焦点切到源码窗口，`i` 把焦点切回 GDB 命令窗口。源码窗口中的移动键与 Vim 有相似之处，但 CGDB 仍然是调试前端，实际调试语义由 GDB 提供。键位规则可查 [CGDB 窗口切换说明](https://cgdb.github.io/docs/Switching-Windows.html)。
 
-也可以直接使用 `gdb -tui ./progress`，或在运行中的 GDB 输入 `tui enable`。GDB 自带的 TUI 可以在终端中分区显示源码、汇编、寄存器与命令，是否可用取决于构建和终端环境。它与 CGDB 是两条不同的界面路线，不必同时使用。[GDB TUI 文档](https://sourceware.org/gdb/current/onlinedocs/gdb.html/TUI.html)给出了详细用法。
+也可以直接使用 `gdb -tui ./sum-debug`，或在运行中的 GDB 输入 `tui enable`。GDB 自带的 TUI 可以在终端中分区显示源码、汇编、寄存器与命令，是否可用取决于构建和终端环境。它与 CGDB 是两条不同的界面路线，不必同时使用。[GDB TUI 文档](https://sourceware.org/gdb/current/onlinedocs/gdb.html/TUI.html)给出了详细用法。
 
 ## 当问题出现时，先判断它属于哪一层
 
@@ -899,7 +737,6 @@ CGDB 在 GDB 之上提供源码窗口，让断点和当前位置更直观。安�
 | 提示找不到头文件                           | 开发包、包含路径、文件名与大小写                |
 | 目标文件生成了，最后却 undefined reference | 实现是否参与链接、库和链接顺序                  |
 | 改了头文件，程序表现却没变                 | Makefile 是否记录了头文件依赖、是否运行了旧产物 |
-| 进度条很久不刷新                           | 标准输出缓冲、终端状态与刷新逻辑                |
 | GitHub 上没有刚才的修改                    | 改动是否暂存、是否提交、是否推送到正确分支      |
 | GDB 的源码行与执行不一致                   | 调试信息、优化选项、源码与可执行文件是否匹配    |
 
