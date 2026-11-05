@@ -10,6 +10,9 @@ tags:
   - 文件系统
   - 输入输出
   - C语言
+series:
+  name: Linux
+  order: 2
 description: 为什么重定向会改变输出位置，fork 又会让日志出现两遍？沿着一次文件读写，理解 C 标准 I/O、文件描述符、缓冲区与 inode 之间的关系。
 ---
 

@@ -9,6 +9,9 @@ tags:
   - 开发工具
   - 编译与链接
   - 版本控制
+series:
+  name: Linux
+  order: 1
 description: 从搭建环境到维护一个多文件 C 项目，串起软件包管理、Vim、GCC/G++、Makefile、Git 与 GDB，理解每个工具负责什么，以及它们怎样协作。
 ---
 
